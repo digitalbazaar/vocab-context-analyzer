@@ -15,3 +15,5 @@ npm-debug.log
 package-lock.json
 .vscode
 .env
+.fastembed_cache
+.zed
