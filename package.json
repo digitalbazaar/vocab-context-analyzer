@@ -6,7 +6,11 @@
   "type": "module",
   "main": "index.js",
   "exports": "./index.js",
+  "bin": {
+    "vocab-context-analyzer": "./bin/vocab-context-analyzer.js"
+  },
   "files": [
+    "bin/vocab-context-analyzer.js",
     "lib/**/*.js",
     "index.js"
   ],
