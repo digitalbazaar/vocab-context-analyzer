@@ -25,5 +25,9 @@
     "@digitalbazaar/eslint-config": "^8.0.1",
     "chai": "^6.2.2",
     "mocha": "^11.7.6"
+  },
+  "dependencies": {
+    "jsonld": "^9.0.0",
+    "jsonld-document-loader": "^2.3.0"
   }
 }

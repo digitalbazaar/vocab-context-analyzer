@@ -4,3 +4,6 @@
 export {ARTIFACT, createFinding, SEVERITY, SOURCE} from './lib/finding.js';
 export {validateFindings} from './lib/findingSchema.js';
 export {runRules} from './lib/runRules.js';
+export {createOfflineDocumentLoader} from './lib/shell/documentLoader.js';
+export {loadModel} from './lib/shell/loadModel.js';
+export {resolveContext} from './lib/shell/resolveContext.js';
