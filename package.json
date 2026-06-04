@@ -1,0 +1,29 @@
+{
+  "name": "vocab-context-analyzer",
+  "version": "0.0.1-pre",
+  "description": "Evaluates whether a JSON-LD/RDF vocabulary and its @context are well designed.",
+  "license": "BSD-3-Clause",
+  "type": "module",
+  "main": "index.js",
+  "exports": "./index.js",
+  "files": [
+    "lib/**/*.js",
+    "index.js"
+  ],
+  "scripts": {
+    "lint": "eslint .",
+    "test": "mocha test/mocha --recursive"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/digitalbazaar/vocab-context-analyzer.git"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "devDependencies": {
+    "@digitalbazaar/eslint-config": "^8.0.1",
+    "chai": "^6.2.2",
+    "mocha": "^11.7.6"
+  }
+}
