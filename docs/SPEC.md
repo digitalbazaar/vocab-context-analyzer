@@ -131,6 +131,31 @@ Things rules cannot judge:
   
 
 LLM output is **advisory and scored**, never a hard CI failure on its own. Every LLM finding must cite the specific term(s) it refers to so it is checkable.
+
+#### 5.2.1 The output must commit, not defer
+
+A prior generation of this kind of tool failed in a specific way: it punted with output like "this needs more input from an expert to decide." That is a **failed finding**, not a cautious one — experts are not on call at authoring time, and a deferral gives the author nothing to act on.
+
+Therefore the LLM layer operates under a **no-deferral constraint**:
+
+- It must commit to a concrete recommendation and, where applicable, a concrete example of the fix. Phrases like "needs expert input", "it depends", or a bare "consider X" with no rationale are prohibited outputs.
+  
+- When the model is genuinely unsure, it expresses that through a `confidence` value on the finding (low-confidence advice is still advice), **not** by refusing to answer. A finding with no actionable recommendation is invalid.
+  
+- **Deferral rate is an eval metric** (§7), with a target of zero. Findings that defer are counted as failures, the same as hallucinated citations.
+  
+
+#### 5.2.2 Model-to-English rendering (a teaching output, not a finding)
+
+A large share of poor modeling comes from authors never _hearing_ what their JSON-LD actually asserts. A JSON object expresses a Thing; its keys are attributes of that Thing — so a well-formed model should read back as coherent English sentences about that Thing. Authors who do not internalize this produce "bags of JSON": unrelated properties tacked onto an object to satisfy one consuming application, e.g. a `printable` boolean on a `Person`. Read aloud — "a Person has a printable flag" — the mistake is obvious in a way it is not when staring at JSON keys.
+
+The tool therefore offers a **model-to-English rendering mode**: for each term / object, it states in plain language what the model says (e.g. "A `Person` has a `birthDate`, which is a date."). This is a distinct output from the `Finding[]` critique stream — its purpose is _teaching_, letting authors self-diagnose.
+
+Design note: the rendering has a **deterministic spine** — expanding the JSON-LD and walking subject → property → range yields a templated sentence with no model required. The LLM's role is narrow: smoothing the prose and flagging when the resulting sentence is nonsensical (the "Person has a printable flag" signal). This keeps the faithfulness of the rendering checkable (§7) and fits the functional-core / imperative-shell split: render sentences in the core, ask the LLM to critique them at the boundary.
+
+#### 5.2.3 Findings should teach, not just flag
+
+Beyond naming and definitions, the most frequent and most damaging error is modeling information as a "bag of JSON" rather than as a Thing with attributes. LLM findings that touch modeling should carry **didactic remediation**: a short explanation of the underlying principle (object = Thing, key = attribute of that Thing), not only a one-line fix. The goal is that authors come away understanding _why_, so they make fewer such mistakes next time.
 ### 5.3 Why not LLM-first
 An LLM-centric design would be faster to prototype but: (a) can't be trusted in CI without the full eval harness already built, (b) makes regressions invisible when the model or prompt changes, (c) costs per-run on artifacts that are mostly checkable for free. Deterministic-first lets phase 1 ship and deliver value before we owe anyone an eval.
 
@@ -165,13 +190,19 @@ Finding {
   artifact      // "vocabulary" | "context" | "pairing"
   term?         // the specific term/IRI implicated
   message       // human-readable
-  remediation?  // suggested fix (phase 3 fills this in richly)
+  remediation?  // suggested fix (phase 3 fills this in richly); for modeling
+                //   findings, includes the didactic "why" (§5.2.3)
+  confidence?   // llm only: how sure the model is. expresses uncertainty
+                //   WITHOUT deferring (§5.2.1). a finding with no actionable
+                //   recommendation is invalid regardless of confidence.
 }
 ```
 ### 6.2 Output modes (the three phases)
 - **Phase 1 — CI linter:** exit non-zero on any `error`. Emits JSON + a human-readable summary. SARIF output is a candidate for GitHub annotations.
   
-- **Phase 2 — Scored report:** deterministic findings + LLM-judged design score (per category: naming, definitions, modeling, coverage). Enables generator-vs-generator comparison. Score is a transparent weighted rollup, not a black box.
+- **Phase 2 — Scored report:** deterministic findings + LLM-judged design score (per category: naming, definitions, modeling, coverage). Enables generator-vs-generator comparison. Score is a transparent weighted rollup, not a black box. LLM findings obey the no-deferral constraint (§5.2.1).
+  
+- **Phase 2 — Model-to-English rendering (§5.2.2):** a separate output mode that states, in plain language, what the model asserts. Teaching-oriented; deterministic spine with LLM prose-smoothing and a nonsense-sentence signal.
   
 - **Phase 3 — Interactive reviewer:** conversational, explains findings and proposes concrete edits; human accepts/rejects. No auto-commit.
   
@@ -180,26 +211,33 @@ Finding {
 ## 7. Eval Strategy (REQUIRED — LLM in runtime path)
 Per DB's AI eval gate: phases 2–3 must not ship without this. Phase 1 is deterministic and self-validating, but its **golden set doubles as the eval foundation** for later phases, so we build it in phase 1.
 
-1. **Measurable outcome the tool optimizes for:** agreement with expert human judgment on whether an artifact is well designed — measured as precision/recall of findings against a labeled set, and rank correlation of LLM design scores vs. expert ranking.
+1. **Measurable outcome the tool optimizes for:** agreement with expert human judgment on whether an artifact is well designed — measured as precision/recall of findings against a labeled set, and rank correlation of LLM design scores vs. expert ranking. A secondary outcome is **actionability**: findings must give the author something concrete to do (deferral rate → 0, §5.2.1).
   
 2. **Golden dataset (build during phase 1):** ~50 labeled examples drawn from **DB's own vocabs/contexts** (the agreed first targets) plus deliberately-broken variants. Each labeled with: known issues (term-level), an overall good/bad/borderline label, and an expert design ranking for the scoring eval. DB's published contexts are the known-good anchors.
   
 3. **Programmatic checks (≥1, we have several):**
   
-  - Schema validation of the `Finding[]` output.
-    
-  - Exact-match: deterministic rules must flag every seeded defect in the broken variants (recall = 1.0 on the deterministic set is a release gate).
-    
-  - For LLM findings: every finding must reference a real term (citation validity check) — hallucinated terms fail the run.
-    
+
+- Schema validation of the `Finding[]` output.
+  
+- Exact-match: deterministic rules must flag every seeded defect in the broken variants (recall = 1.0 on the deterministic set is a release gate).
+  
+- For LLM findings: every finding must reference a real term (citation validity check) — hallucinated terms fail the run.
+  
+- **Deferral rate (§5.2.1):** the share of LLM findings that defer ("needs expert input", "it depends", non-actionable "consider") must be **zero**. Deferrals are counted as failures, like hallucinations. Each finding must carry an actionable recommendation; uncertainty is expressed via `confidence`, not refusal.
+  
+- **English-rendering faithfulness (§5.2.2):** the plain-language rendering must accurately reflect the underlying triples. Because the rendering has a deterministic spine, faithfulness is checkable — the rendered subject/property/range must match the expanded model.
+  
+
 4. **Regression detection before users:**
   
-  - CI runs the full golden set on every change to rules _or_ prompts.
-    
-  - Track deterministic recall (must stay 1.0) and LLM precision / rank correlation against a threshold; a drop blocks merge.
-    
-  - Prompt and model version are pinned and recorded in each report for reproducibility.
-    
+
+- CI runs the full golden set on every change to rules _or_ prompts.
+  
+- Track deterministic recall (must stay 1.0), LLM precision / rank correlation against a threshold, and deferral rate (must stay 0); a regression on any blocks merge.
+  
+- Prompt and model version are pinned and recorded in each report for reproducibility.
+  
 
 * * *
 ## 8. Data Flows & Privacy
@@ -239,47 +277,33 @@ Reuse posture: `yml2vocab` is a TypeScript Node/Deno tool usable as a CLI (`-c` 
 | Phase | Deliverable | Eval owed |
 | --- | --- | --- |
 | 1   | Deterministic CI linter + Finding model + golden set built | Schema + recall=1.0 on seeded defects |
-| 2   | LLM scoring layer + report + generator comparison | Precision threshold + rank correlation + citation validity |
+| 2   | LLM scoring layer + report + generator comparison + model-to-English rendering (§5.2.2) | Precision threshold + rank correlation + citation validity + deferral rate = 0 + rendering faithfulness |
 | 3   | Interactive reviewer with remediation suggestions | Human acceptance rate of suggestions tracked |
 
 Phase 1 ships standalone value (catches real breakage in CI) before any LLM commitment.
 
 * * *
 ## 11. Resolved Decisions & Open Questions
-
 ### 11.1 Resolved
+Settled during spec review. These shape phase 1 and need no further input to start.
 
-Settled during spec review. These shape phase 1 and need no further input to
-start.
-
-1. **Golden set source & labeling.** Sourced from `yml2vocab` fixtures (§9.1)
-   plus DB's published vocabs/contexts as known-good anchors. "Well designed" is
-   **derived from the known-good corpus** rather than hand-labeled against an
-   external style guide — most established vocab/context specs originate at DB,
-   so the corpus *is* the reference. No separate expert-labeling step is required
-   to begin; seeded-defect variants supply the negative examples.
-2. **`jsonld-document-loader` reuse.** Yes — reuse it for IRI resolution/caching
-   in the shell (§6, §9). Design-time-specific behavior (e.g. always-fresh or
-   stricter errors) is a configuration concern on top of it, not a reason to
-   reimplement.
-3. **Severity policy.** Incomplete context coverage is a **warning, not an
-   error**. Hard CI failures are reserved for objective breakage (unresolvable
-   IRIs, collisions, invalid JSON-LD, orphan mappings). Coverage and stylistic
-   gaps warn.
-4. **Distribution.** **Both** a standalone CLI/library *and* a GitHub Action.
-   The library is the core; the Action wraps it for CI annotations (SARIF, §6.2).
-
+1. **Golden set source & labeling.** Sourced from `yml2vocab` fixtures (§9.1) plus DB's published vocabs/contexts as known-good anchors. "Well designed" is **derived from the known-good corpus** rather than hand-labeled against an external style guide — most established vocab/context specs originate at DB, so the corpus _is_ the reference. No separate expert-labeling step is required to begin; seeded-defect variants supply the negative examples.
+  
+2. `jsonld-document-loader` **reuse.** Yes — reuse it for IRI resolution/caching in the shell (§6, §9). Design-time-specific behavior (e.g. always-fresh or stricter errors) is a configuration concern on top of it, not a reason to reimplement.
+  
+3. **Severity policy.** Incomplete context coverage is a **warning, not an error**. Hard CI failures are reserved for objective breakage (unresolvable IRIs, collisions, invalid JSON-LD, orphan mappings). Coverage and stylistic gaps warn.
+  
+4. **Distribution.** **Both** a standalone CLI/library _and_ a GitHub Action. The library is the core; the Action wraps it for CI annotations (SARIF, §6.2).
+  
+5. **Deterministic _and_ LLM, both wanted.** The deterministic linter and the qualitative LLM layer are both in scope (not either/or). The LLM layer must give actionable recommendations rather than defer (§5.2.1), should explain the underlying modeling principle (§5.2.3), and includes a model-to-English rendering mode for teaching (§5.2.2). This confirms phases 2–3 are wanted, so the eval gate (§7) is owed, not optional.
+  
 ### 11.2 Still open
-
 Do not block phase 1; revisited before phase-2/3 work starts.
 
-1. **Additional generators to target.** `yml2vocab` is the canonical phase-1
-   generator-under-test (§9.1). Which *other* auto-generation tools the CTO wants
-   graded for the phase-2 comparison report is still open.
-2. **Score interpretation (deferred).** What a phase-2 design score *means* to a
-   consumer, and what threshold (if any) gates accepting a generator's output.
-   Deferred until phase-2 scoping.
-
+1. **Additional generators to target.** `yml2vocab` is the canonical phase-1 generator-under-test (§9.1). Which _other_ auto-generation tools the CTO wants graded for the phase-2 comparison report is still open.
+  
+2. **Score interpretation (deferred).** What a phase-2 design score _means_ to a consumer, and what threshold (if any) gates accepting a generator's output. Deferred until phase-2 scoping.
+  
 
 * * *
 ## 12. Risks
@@ -287,8 +311,6 @@ Do not block phase 1; revisited before phase-2/3 work starts.
   
 - **LLM nondeterminism / drift** — mitigated by pinned prompt+model, citation checks, and CI eval gates.
   
-- **Over-flagging** — a noisy linter gets ignored. Severity discipline and
-  precision tracking matter. Revisit once the golden set (§9.1) gives real
-  samples to tune precision against.
+- **Over-flagging** — a noisy linter gets ignored. Severity discipline and precision tracking matter. Revisit once the golden set (§9.1) gives real samples to tune precision against.
   
 - **Resolution flakiness** — external IRIs that don't resolve; mitigated by caching + offline snapshot mode.
