@@ -1,0 +1,48 @@
+[
+  {
+    "name": "good",
+    "vocab": "good.jsonld",
+    "context": "good.context.jsonld",
+    "expectedRuleIds": []
+  },
+  {
+    "name": "broken-no-definition",
+    "vocab": "broken-no-definition.jsonld",
+    "context": "broken-no-definition.context.jsonld",
+    "expectedRuleIds": [
+      "vocab/no-definition"
+    ]
+  },
+  {
+    "name": "broken-uncovered",
+    "vocab": "broken-uncovered.jsonld",
+    "context": "broken-uncovered.context.jsonld",
+    "expectedRuleIds": [
+      "pair/coverage"
+    ]
+  },
+  {
+    "name": "broken-orphan",
+    "vocab": "broken-orphan.jsonld",
+    "context": "broken-orphan.context.jsonld",
+    "expectedRuleIds": [
+      "pair/orphan"
+    ]
+  },
+  {
+    "name": "broken-collision",
+    "vocab": "broken-collision.jsonld",
+    "context": "broken-collision.context.jsonld",
+    "expectedRuleIds": [
+      "ctx/iri-collision"
+    ]
+  },
+  {
+    "name": "broken-unresolved",
+    "vocab": "broken-unresolved.jsonld",
+    "context": "broken-unresolved.context.jsonld",
+    "expectedRuleIds": [
+      "ctx/iri-unresolved"
+    ]
+  }
+]

@@ -1,0 +1,27 @@
+vocab:
+  id: ex
+  value: https://example.org/v#
+  context: https://example.org/v.context.jsonld
+
+ontology:
+  - property: dc:title
+    value: Golden Example Vocabulary
+  - property: dc:description
+    value: A clean vocabulary used as the golden-set baseline.
+
+class:
+  - id: Person
+    label: Person
+    comment: A human being.
+
+property:
+  - id: name
+    label: name
+    domain: Person
+    range: xsd:string
+    comment: The name of a Person.
+  - id: knows
+    label: knows
+    domain: Person
+    range: Person
+    comment: A Person this Person knows.

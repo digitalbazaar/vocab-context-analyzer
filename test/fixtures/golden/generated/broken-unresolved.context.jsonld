@@ -1,0 +1,22 @@
+{
+  "@context": {
+    "@protected": true,
+    "Person": {
+      "@id": "https://example.org/v#Person",
+      "@context": {
+        "@protected": true,
+        "name": {
+          "@id": "https://example.org/v#name",
+          "@type": "http://www.w3.org/2001/XMLSchema#string"
+        },
+        "knows": {
+          "@id": "https://example.org/v#knows",
+          "@type": "@id"
+        },
+        "broken": {
+          "@id": "notaprefix:butnoscheme that breaks"
+        }
+      }
+    }
+  }
+}

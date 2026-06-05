@@ -15,6 +15,7 @@
     "index.js"
   ],
   "scripts": {
+    "build:fixtures": "node scripts/build-fixtures.js",
     "lint": "eslint .",
     "test": "mocha test/mocha --recursive"
   },
