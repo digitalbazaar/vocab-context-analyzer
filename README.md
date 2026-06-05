@@ -173,9 +173,8 @@ This keeps the rule logic deterministic and trivially unit-testable. See
 ## Spec
 
 See [docs/SPEC.md](docs/SPEC.md) for the full technical spec — scope, the
-deterministic-vs-LLM judgment split, architecture, eval strategy, and deferred
-open questions. The phase-1 implementation plan is in
-[docs/PHASE1-PLAN.md](docs/PHASE1-PLAN.md).
+deterministic-vs-LLM judgment split, architecture, eval strategy, current
+implementation status (§10.1), and deferred open questions.
 
 ## Contribute
 
