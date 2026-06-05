@@ -33,7 +33,7 @@ The analyzer is delivered in three phases:
 
 ## Status
 
-**Phase 1 (deterministic core) is implemented and working.** A CLI and library
+**Phase 1 (deterministic core) is implemented and validated.** A CLI and library
 run a set of deterministic checks over a JSON-LD vocabulary and its `@context`
 and report structured findings, end to end. Phases 2–3 (LLM scoring,
 model-to-English rendering, interactive review) are specified but not yet built.
@@ -43,13 +43,20 @@ Implemented:
 - A pure rule engine producing structured `Finding[]` output.
 - Deterministic rules for context IRI resolution, IRI collisions, vocab/context
   coverage, orphan mappings, and missing term definitions.
-- An offline-by-default JSON-LD loader and a model builder for vocab + context
-  files.
+- An offline-by-default JSON-LD loader and a model builder that handle nested
+  scoped contexts, keyword aliases, and `@container`-typed terms.
 - A CLI with human-readable and JSON output and CI-friendly exit codes.
+- A `yml2vocab` golden-set fixture factory and a recall gate: every seeded
+  defect is caught (recall = 1.0).
+- Validation against published W3C and Digital Bazaar contexts (DID,
+  credentials-v2, data-integrity, ActivityStreams, ODRL, and others), kept as
+  regression fixtures.
 
-Remaining in phase 1: the `yml2vocab` golden-set fixtures (the eval gate) and
-the additional deterministic checks listed in [docs/SPEC.md](docs/SPEC.md) §5.1.
-Input is JSON-LD only for now; Turtle/N-Triples input is deferred.
+Remaining in phase 1: the additional deterministic checks listed in
+[docs/SPEC.md](docs/SPEC.md) §5.1 (`@type` coercion, `@protected`, `@vocab`
+canonicalization, domain/range, subclass integrity, deprecation, version
+agreement, network resolvability). Input is JSON-LD only for now;
+Turtle/N-Triples input is deferred.
 
 ## Install
 
