@@ -1,5 +1,12 @@
 # Phase 1 Implementation Plan — Functional Core First
-**Status:** Draft for review **Date:** 2026-06-03 **Scope:** SPEC §5.1 deterministic checks + §6.1 Finding model. Pure core only.
+**Status:** Implemented (updated 2026-06-04) **Date:** 2026-06-03 **Scope:** SPEC §5.1 deterministic checks + §6.1 Finding model. Pure core only.
+
+> **Status note (2026-06-04):** This plan has been carried out. The functional
+> core, the imperative shell (loader + model builder), and the CLI all landed
+> and are tested. What remains of phase 1 is the `yml2vocab` fixture factory /
+> golden set and the deferred deterministic rules — see SPEC §10.1 for the
+> authoritative status. The plan below is retained as the original design
+> record.
 
 * * *
 ## Goal

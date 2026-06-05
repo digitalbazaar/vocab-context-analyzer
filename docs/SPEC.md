@@ -1,5 +1,5 @@
 # Technical Spec — Vocabulary & Context Quality Analyzer
-**Status:** Draft for review **Author:** DJ Scruggs **Date:** 2026-06-03 **Reviewers:** Engineering, DevOps, CTO, Privacy Officer
+**Status:** Phase 1 (deterministic) implemented; phases 2–3 specified, not built **Author:** DJ Scruggs **Date:** 2026-06-03 (updated 2026-06-04) **Reviewers:** Engineering, DevOps, CTO, Privacy Officer
 
 * * *
 ## 1. Summary
@@ -281,6 +281,25 @@ Reuse posture: `yml2vocab` is a TypeScript Node/Deno tool usable as a CLI (`-c` 
 | 3   | Interactive reviewer with remediation suggestions | Human acceptance rate of suggestions tracked |
 
 Phase 1 ships standalone value (catches real breakage in CI) before any LLM commitment.
+
+### 10.1 Implementation status (as of 2026-06-04)
+
+Phase 1's deterministic vertical is **built and working end to end**: files →
+CLI → shell → core → findings → report → exit code.
+
+- **Done:** Finding model + schema validator; five deterministic rules
+  (`ctx/iri-unresolved`, `ctx/iri-collision`, `pair/coverage`, `pair/orphan`,
+  `vocab/no-definition`); the offline-by-default loader and JSON-LD model
+  builder (shell); the CLI (human + JSON output, CI exit codes); README usage
+  docs. JSON-LD input only; Turtle deferred.
+- **Remaining in phase 1:** the `yml2vocab` fixture factory and the golden set
+  (§7, §9.1) — the eval gate (recall = 1.0 on seeded defects) at full-artifact
+  scale. The additional deterministic checks listed in §5.1 but not yet
+  implemented (`@type` coercion, `@protected`, `@vocab` canonicalization,
+  domain/range, subclass integrity, deprecation, version agreement,
+  network resolvability) are also outstanding.
+- **Not started:** phases 2–3 (LLM scoring, model-to-English rendering,
+  interactive reviewer). Specified in §5.2 and §6.2; gated on the eval gate.
 
 * * *
 ## 11. Resolved Decisions & Open Questions

@@ -33,12 +33,12 @@ The analyzer is delivered in three phases:
 
 ## Status
 
-**Phase 1 (deterministic core) in progress.** A working CLI and library run a
-set of deterministic checks over a JSON-LD vocabulary and its `@context` and
-report structured findings. Phases 2–3 (LLM scoring, interactive review) are not
-yet implemented.
+**Phase 1 (deterministic core) is implemented and working.** A CLI and library
+run a set of deterministic checks over a JSON-LD vocabulary and its `@context`
+and report structured findings, end to end. Phases 2–3 (LLM scoring,
+model-to-English rendering, interactive review) are specified but not yet built.
 
-Implemented so far:
+Implemented:
 
 - A pure rule engine producing structured `Finding[]` output.
 - Deterministic rules for context IRI resolution, IRI collisions, vocab/context
@@ -47,6 +47,8 @@ Implemented so far:
   files.
 - A CLI with human-readable and JSON output and CI-friendly exit codes.
 
+Remaining in phase 1: the `yml2vocab` golden-set fixtures (the eval gate) and
+the additional deterministic checks listed in [docs/SPEC.md](docs/SPEC.md) §5.1.
 Input is JSON-LD only for now; Turtle/N-Triples input is deferred.
 
 ## Install
