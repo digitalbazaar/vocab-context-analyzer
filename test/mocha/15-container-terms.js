@@ -22,8 +22,8 @@ describe('shell: container and explicit-@id terms', () => {
         proof: {'@id': 'sec:proof', '@type': '@id', '@container': '@graph'}
       }
     });
-    expect(mappings).to.deep.include(
-      {term: 'proof', iri: 'https://w3id.org/security#proof'});
+    const proof = mappings.find(m => m.term === 'proof');
+    expect(proof.iri).to.equal('https://w3id.org/security#proof');
   });
 
   it('resolves a term with @container: @set', async () => {

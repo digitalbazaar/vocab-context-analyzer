@@ -24,8 +24,8 @@ describe('shell: resolveContext', () => {
       age: {'@id': 'ex:age', '@type': 'http://www.w3.org/2001/XMLSchema#integer'}
     };
     const {mappings} = await resolveContext({'@context': ctx});
-    expect(mappings).to.deep.include(
-      {term: 'age', iri: 'https://example.org/v#age'});
+    const age = mappings.find(m => m.term === 'age');
+    expect(age.iri).to.equal('https://example.org/v#age');
   });
 
   it('does not emit a mapping for prefix entries themselves', async () => {
