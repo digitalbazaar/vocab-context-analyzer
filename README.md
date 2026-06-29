@@ -41,8 +41,11 @@ model-to-English rendering, interactive review) are specified but not yet built.
 Implemented:
 
 - A pure rule engine producing structured `Finding[]` output.
-- Deterministic rules for context IRI resolution, IRI collisions, vocab/context
-  coverage, orphan mappings, and missing term definitions.
+- Twelve deterministic rules: context IRI resolution, IRI collisions,
+  vocab/context coverage, orphan mappings, missing term definitions, `@type`
+  coercion, `@protected` usage, unsafe top-level `@vocab`, domain/range,
+  subclass/subproperty integrity, deprecation marking, and IRI stability — plus
+  a JSON-LD validity / canonicalization smoke test.
 - An offline-by-default JSON-LD loader and a model builder that handle nested
   scoped contexts, keyword aliases, and `@container`-typed terms.
 - A CLI with human-readable and JSON output and CI-friendly exit codes.
@@ -52,11 +55,12 @@ Implemented:
   credentials-v2, data-integrity, ActivityStreams, ODRL, and others), kept as
   regression fixtures.
 
-Remaining in phase 1: the additional deterministic checks listed in
-[docs/SPEC.md](docs/SPEC.md) §5.1 (`@type` coercion, `@protected`, `@vocab`
-canonicalization, domain/range, subclass integrity, deprecation, version
-agreement, network resolvability). Input is JSON-LD only for now;
-Turtle/N-Triples input is deferred.
+Remaining in phase 1: two §5.1 checks are deferred — **version-metadata
+agreement** (no DB/`yml2vocab` artifact currently emits semantic version
+metadata, so there is nothing to compare) and **network IRI resolvability**
+(needs a live-loader/snapshot design to avoid CI false positives under the
+offline default loader). Input is JSON-LD only for now; Turtle/N-Triples input
+is deferred.
 
 ## Install
 

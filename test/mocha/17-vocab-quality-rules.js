@@ -5,6 +5,7 @@ import {deprecatedTerm} from '../../lib/rules/deprecatedTerm.js';
 import {expect} from 'chai';
 import {protectedContext} from '../../lib/rules/protectedContext.js';
 import {stableIri} from '../../lib/rules/stableIri.js';
+import {unsafeVocab} from '../../lib/rules/unsafeVocab.js';
 
 const NS = 'https://example.org/v#';
 
@@ -66,6 +67,71 @@ describe('rule: ctx/unprotected', () => {
   it('does not flag when raw context is unavailable', () => {
     const model = {vocab: {terms: []}, context: {mappings: []}};
     expect(protectedContext(model)).to.deep.equal([]);
+  });
+});
+
+describe('rule: ctx/unsafe-vocab', () => {
+  it('produces no finding when @vocab is an absolute IRI', () => {
+    const model = {
+      vocab: {terms: []},
+      context: {mappings: [], raw: {'@vocab': `${NS}`, name: 'ex:name'}}
+    };
+    expect(unsafeVocab(model)).to.deep.equal([]);
+  });
+
+  it('produces no finding when no @vocab is declared', () => {
+    const model = {
+      vocab: {terms: []},
+      context: {mappings: [], raw: {ex: `${NS}`, name: 'ex:name'}}
+    };
+    expect(unsafeVocab(model)).to.deep.equal([]);
+  });
+
+  it('flags a blank-node @vocab (breaks canonicalization)', () => {
+    const model = {
+      vocab: {terms: []},
+      context: {mappings: [], raw: {'@vocab': '_:'}}
+    };
+    const findings = unsafeVocab(model);
+    expect(findings).to.have.lengthOf(1);
+    expect(findings[0]).to.include({
+      id: 'ctx/unsafe-vocab', severity: 'error', artifact: 'context'
+    });
+  });
+
+  it('flags a relative @vocab (resolves against document base)', () => {
+    const model = {
+      vocab: {terms: []},
+      context: {mappings: [], raw: {'@vocab': 'terms/'}}
+    };
+    const findings = unsafeVocab(model);
+    expect(findings).to.have.lengthOf(1);
+    expect(findings[0].id).to.equal('ctx/unsafe-vocab');
+  });
+
+  it('flags an empty-string @vocab', () => {
+    const model = {
+      vocab: {terms: []},
+      context: {mappings: [], raw: {'@vocab': ''}}
+    };
+    expect(unsafeVocab(model)).to.have.lengthOf(1);
+  });
+
+  it('does not flag per-term "@type": "@vocab" coercions', () => {
+    // the top-level @vocab key is the canonicalization hazard; a term-level
+    // "@type": "@vocab" coercion is unrelated and must not be flagged
+    const model = {
+      vocab: {terms: []},
+      context: {mappings: [], raw: {
+        ex: `${NS}`, action: {'@id': 'ex:action', '@type': '@vocab'}
+      }}
+    };
+    expect(unsafeVocab(model)).to.deep.equal([]);
+  });
+
+  it('does not flag when raw context is unavailable', () => {
+    const model = {vocab: {terms: []}, context: {mappings: []}};
+    expect(unsafeVocab(model)).to.deep.equal([]);
   });
 });
 

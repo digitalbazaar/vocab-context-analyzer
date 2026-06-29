@@ -302,10 +302,17 @@ files → CLI → shell → core → findings → report → exit code.
   `@id`. Eight real contexts (DID, credentials-v2, data-integrity-v2,
   ActivityStreams, ODRL, ed25519-2020, status-list, citizenship) are kept as
   regression fixtures that must resolve with zero false unresolved terms.
-- **Remaining in phase 1:** the additional deterministic checks listed in §5.1
-  but not yet implemented (`@type` coercion, `@protected`, `@vocab`
-  canonicalization, domain/range, subclass integrity, deprecation, version
-  agreement, network resolvability).
+- **Remaining in phase 1:** two §5.1 checks are deferred as follow-up issues:
+  **version-metadata agreement** and **network IRI resolvability**. The version
+  check has no input to act on — `yml2vocab` (the canonical generator-under-test)
+  emits no semantic version metadata (only a `dc:date` timestamp), and the only
+  `@version` in real contexts is JSON-LD's 1.1 processing mode, not a document
+  version; the SPEC hedges this check as "if present", and it is not. Network
+  resolvability needs its own live-loader/snapshot design to avoid CI false
+  positives under the offline default loader. All other §5.1 checks are built:
+  `@type` coercion, `@protected`, `@vocab` canonicalization, domain/range,
+  subclass integrity, deprecation, IRI stability, coverage, orphans, collision,
+  term-has-definition, JSON-LD validity smoke test (12 deterministic rules).
 - **Not started:** phases 2–3 (LLM scoring, model-to-English rendering,
   interactive reviewer). Specified in §5.2 and §6.2; gated on the eval gate.
 
