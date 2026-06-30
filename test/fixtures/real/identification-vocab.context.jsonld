@@ -1,0 +1,74 @@
+{
+    "@context": {
+        "@protected": true,
+        "IdentificationDocumentCredential": "https://w3id.org/identification#IdentificationDocumentCredential",
+        "IdentificationDocument": {
+            "@id": "https://w3id.org/identification#IdentificationDocument",
+            "@context": {
+                "@protected": true,
+                "documentNumber": {
+                    "@id": "https://w3id.org/identification#documentNumber",
+                    "@type": "http://www.w3.org/2001/XMLSchema#string"
+                },
+                "issuer": {
+                    "@id": "https://www.w3.org/2018/credentials#issuer",
+                    "@type": "http://www.w3.org/2001/XMLSchema#string"
+                },
+                "name": {
+                    "@id": "http://schema.org/name",
+                    "@type": "http://www.w3.org/2001/XMLSchema#string"
+                },
+                "validUntil": {
+                    "@id": "https://www.w3.org/2018/credentials#validUntil",
+                    "@type": "http://www.w3.org/2001/XMLSchema#date"
+                }
+            }
+        },
+        "Person": {
+            "@id": "http://schema.org/Person",
+            "@context": {
+                "@protected": true,
+                "additionalName": {
+                    "@id": "http://schema.org/additionalName",
+                    "@type": "http://www.w3.org/2001/XMLSchema#string"
+                },
+                "address": {
+                    "@id": "https://w3id.org/identification#address",
+                    "@type": "@id"
+                },
+                "birthDate": {
+                    "@id": "http://schema.org/birthDate",
+                    "@type": "http://www.w3.org/2001/XMLSchema#date"
+                },
+                "email": {
+                    "@id": "http://schema.org/email",
+                    "@type": "http://www.w3.org/2001/XMLSchema#string"
+                },
+                "familyName": {
+                    "@id": "https://w3id.org/identification#familyName",
+                    "@type": "http://www.w3.org/2001/XMLSchema#string"
+                },
+                "givenName": {
+                    "@id": "http://schema.org/givenName",
+                    "@type": "http://www.w3.org/2001/XMLSchema#string"
+                },
+                "identificationDocument": {
+                    "@id": "https://w3id.org/identification#identificationDocument",
+                    "@type": "@id"
+                },
+                "image": {
+                    "@id": "https://w3id.org/identification#image",
+                    "@type": "http://www.w3.org/2001/XMLSchema#string"
+                },
+                "name": {
+                    "@id": "http://schema.org/name",
+                    "@type": "http://www.w3.org/2001/XMLSchema#string"
+                },
+                "telephone": {
+                    "@id": "http://schema.org/telephone",
+                    "@type": "http://www.w3.org/2001/XMLSchema#string"
+                }
+            }
+        }
+    }
+}

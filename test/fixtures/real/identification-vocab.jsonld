@@ -1,0 +1,187 @@
+{
+    "@context": {
+        "id": "https://w3id.org/identification#",
+        "cred": "https://www.w3.org/2018/credentials#",
+        "schema": "http://schema.org/",
+        "dc": "http://purl.org/dc/terms/",
+        "owl": "http://www.w3.org/2002/07/owl#",
+        "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+        "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+        "xsd": "http://www.w3.org/2001/XMLSchema#",
+        "vs": "http://www.w3.org/2003/06/sw-vocab-status/ns#",
+        "jsonld": "http://www.w3.org/ns/json-ld#",
+        "dc:date": {
+            "@type": "xsd:date"
+        },
+        "rdfs:domain": {
+            "@type": "@id"
+        },
+        "rdfs:range": {
+            "@type": "@id"
+        },
+        "rdfs:seeAlso": {
+            "@type": "@id"
+        },
+        "rdfs:subClassOf": {
+            "@type": "@id"
+        },
+        "rdfs:subPropertyOf": {
+            "@type": "@id"
+        },
+        "rdfs:isDefinedBy": {
+            "@type": "@id"
+        },
+        "owl:oneOf": {
+            "@container": "@list",
+            "@type": "@vocab"
+        },
+        "owl:deprecated": {
+            "@type": "xsd:boolean"
+        },
+        "owl:inverseOf": {
+            "@type": "@vocab"
+        },
+        "owl:unionOf": {
+            "@container": "@list",
+            "@type": "@vocab"
+        },
+        "rdfs_classes": {
+            "@reverse": "rdfs:isDefinedBy",
+            "@type": "@id"
+        },
+        "rdfs_properties": {
+            "@reverse": "rdfs:isDefinedBy",
+            "@type": "@id"
+        },
+        "rdfs_individuals": {
+            "@reverse": "rdfs:isDefinedBy",
+            "@type": "@id"
+        },
+        "rdfs_datatypes": {
+            "@reverse": "rdfs:isDefinedBy",
+            "@type": "@id"
+        },
+        "mentioned": {
+            "@reverse": "schema:mentions",
+            "@type": "@id"
+        }
+    },
+    "@id": "https://w3id.org/identification#",
+    "@type": "owl:Ontology",
+    "dc:title": {
+        "@value": "Identification Document Vocabulary",
+        "@language": "en"
+    },
+    "dc:description": {
+        "@value": "<div>\n    <h2>Introduction to the Identification Document Vocabulary</h2>\n    <p>The Identification Document Vocabulary is a helpful tool for organizing information related to various identification documents like passports, driver's licenses, and national IDs. In today's world, where we rely heavily on these documents for verification and identification, having a clear and consistent way to describe them is very important. This vocabulary makes it easier to share and understand the details about these documents.</p>\n\n    <p>One of the key benefits of using this vocabulary is that it promotes better communication between different organizations. For example, banks, government agencies, and travel companies all need to verify the identity of individuals. By using a common vocabulary, these organizations can reduce misunderstandings and make processes more efficient.</p>\n\n    <p>Many market verticals can benefit from employing the Identification Document Vocabulary. The financial sector, including banks and insurance companies, often requires identification verification to prevent fraud. Government agencies also need clear information about identification documents to maintain security and provide services effectively. Travel and hospitality industries, such as airlines and hotels, can streamline their check-in processes using this vocabulary.</p>\n\n    <p>There are many use cases for the Identification Document Vocabulary. For instance, when a person applies for a loan, the bank can use this vocabulary to collect and verify necessary information from their identification documents. Similarly, during airport check-ins, airline staff can refer to the vocabulary to ensure that all required details are captured accurately.</p>\n\n    <p>To make the most of this vocabulary, organizations must understand its requirements. They need to ensure that their systems can incorporate this standardized vocabulary into their processes. Training staff on how to use it effectively is also crucial to maximize its benefits and ensure smooth operations.</p>\n\n    <p>In conclusion, the Identification Document Vocabulary is a valuable resource for various sectors that deal with identification verification. It helps improve communication, efficiency, and security, making it easier for organizations to serve their customers and meet regulatory requirements.</p>\n</div>",
+        "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+    },
+    "dc:abstract": {
+        "@value": "The Identification Document Vocabulary is a set of standard terms and definitions used to describe different types of identification documents, such as passports and driver's licenses. It helps organize important information related to these documents, including details about the holder, such as their name, date of birth, and expiration date. This vocabulary aims to improve communication and data sharing about identification documents, making it easier for organizations to understand and manage this information effectively.",
+        "@language": "en"
+    },
+    "dc:date": "2026-06-30",
+    "rdfs_properties": [{
+        "@id": "id:address",
+        "@type": ["rdf:Property", "owl:ObjectProperty"],
+        "rdfs:domain": "schema:Person",
+        "rdfs:range": "schema:PostalAddress",
+        "rdfs:label": "Address",
+        "rdfs:comment": {
+            "@value": "<div>The property that specifies the address related to the Person, modeled as a PostalAddress per schema.org specification.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/identification/v1rc1",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "id:documentNumber",
+        "@type": ["rdf:Property", "owl:DatatypeProperty"],
+        "rdfs:domain": "id:IdentificationDocument",
+        "rdfs:range": "xsd:string",
+        "rdfs:label": "Document Number",
+        "rdfs:comment": {
+            "@value": "<div>The number that uniquely identifies the identification document.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/identification/v1rc1",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "id:familyName",
+        "@type": ["rdf:Property", "owl:DatatypeProperty"],
+        "rdfs:domain": "schema:Person",
+        "rdfs:range": "xsd:string",
+        "rdfs:label": "Family Name",
+        "rdfs:comment": {
+            "@value": "<div>The property that specifies the family name of the Person, Employer, or Attestor, representing their last name or surname.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/identification/v1rc1",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "id:identificationDocument",
+        "@type": ["rdf:Property", "owl:ObjectProperty"],
+        "rdfs:domain": "schema:Person",
+        "rdfs:range": ["id:IdentificationDocument", "cred:VerifiableCredential"],
+        "rdfs:label": "Identification Document",
+        "rdfs:comment": {
+            "@value": "<div>The property that specifies the identification document of the Person, which may include documents like driver's license, passport, or any official ID.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/identification/v1rc1",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "id:image",
+        "@type": ["rdf:Property", "owl:DatatypeProperty"],
+        "rdfs:domain": "schema:Person",
+        "rdfs:range": "xsd:string",
+        "rdfs:label": "Image",
+        "rdfs:comment": {
+            "@value": "<div>The property that specifies an image of the individual.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/identification/v1rc1",
+            "@type": "jsonld:Context"
+        }]
+    }],
+    "rdfs_classes": [{
+        "@id": "id:IdentificationDocumentCredential",
+        "@type": "rdfs:Class",
+        "rdfs:label": "Identification Document Credential",
+        "rdfs:comment": {
+            "@value": "<div>A credential that expresses identification information for a particular person that is issued by an authority of some sort.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/identification/v1rc1",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "id:IdentificationDocument",
+        "@type": "rdfs:Class",
+        "rdfs:label": "Identification Document",
+        "rdfs:comment": {
+            "@value": "<div>A document that serves to verify the identity of an individual, such as a passport or a driver's license.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/identification/v1rc1",
+            "@type": "jsonld:Context"
+        }]
+    }]
+}
