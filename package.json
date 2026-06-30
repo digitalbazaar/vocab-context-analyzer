@@ -29,10 +29,14 @@
   "devDependencies": {
     "@digitalbazaar/eslint-config": "^8.0.1",
     "chai": "^6.2.2",
-    "mocha": "^11.7.6"
+    "mocha": "^11.7.6",
+    "yml2vocab": "^1.9.3"
   },
   "dependencies": {
     "jsonld": "^9.0.0",
     "jsonld-document-loader": "^2.3.0"
+  },
+  "peerDependencies": {
+    "yml2vocab": "^1.9.3"
   }
 }
