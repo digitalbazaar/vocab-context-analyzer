@@ -76,12 +76,26 @@ npm install vocab-context-analyzer
 
 ```sh
 vocab-context-analyzer --vocab <file> --context <file> [--format human|json]
+vocab-context-analyzer --yaml <vocabulary.yml> [--format human|json]
 ```
+
+There are two input modes:
+
+- **Artifact mode** (`--vocab` + `--context`): analyze already-built JSON-LD
+  documents.
+- **Build-check mode** (`--yaml`): build the vocabulary and `@context` from a
+  [yml2vocab](https://www.npmjs.com/package/yml2vocab) source, then analyze the
+  generated output. If the source does
+  not compile, the analyzer reports a single terminal `build/yml2vocab-fails`
+  error and the rule engine does not run. `--yaml` cannot be combined with
+  `--vocab` or `--context`. yml2vocab is a peer dependency, loaded only in this
+  mode.
 
 | Option | Description |
 | --- | --- |
-| `--vocab <file>` | Path to the JSON-LD vocabulary document (required). |
-| `--context <file>` | Path to the JSON-LD `@context` document (required). |
+| `--vocab <file>` | Path to the JSON-LD vocabulary document (required unless `--yaml`). |
+| `--context <file>` | Path to the JSON-LD `@context` document (required unless `--yaml`). |
+| `--yaml <vocabulary.yml>` | Build from a yml2vocab source, then analyze. Mutually exclusive with `--vocab`/`--context`. |
 | `--format human\|json` | Output format (default: `human`). |
 | `-h`, `--help` | Show help. |
 
@@ -109,6 +123,19 @@ WARNING [pair/coverage] https://example.org/v#age
   Vocabulary term <https://example.org/v#age> is not mapped in the context.
 
 1 error, 1 warning, 0 infos.
+```
+
+Build-check mode catches vocabularies that do not compile before any rules run:
+
+```sh
+vocab-context-analyzer --yaml my-vocab.yml
+```
+
+```
+ERROR [build/yml2vocab-fails]
+  yml2vocab cannot build the vocabulary: URL for prefix "foo" not found.
+
+1 error, 0 warnings, 0 infos.
 ```
 
 ### Library

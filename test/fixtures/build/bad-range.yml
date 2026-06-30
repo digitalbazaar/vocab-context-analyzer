@@ -1,0 +1,23 @@
+vocab:
+  id: ex
+  value: https://example.org/v#
+ontology:
+  - property: dc:title
+    value: Build-Check Bad-Range Example
+  - property: dc:description
+    value: >-
+      A minimal synthetic vocabulary that yml2vocab refuses to build, used to
+      exercise the terminal build-failure path. The relatedThing property
+      declares a range under an undeclared prefix, so yml2vocab throws.
+class:
+  - id: Widget
+    label: Widget
+    comment: A defined class.
+property:
+  - id: relatedThing
+    label: related thing
+    domain: Widget
+    range: foo:Bar
+    comment: >-
+      The range references the prefixed term foo:Bar, but no foo prefix is
+      declared, so yml2vocab cannot resolve it and fails the build.
