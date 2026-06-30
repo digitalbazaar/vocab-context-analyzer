@@ -28,6 +28,47 @@ describe('shell: resolveContext', () => {
     expect(age.iri).to.equal('https://example.org/v#age');
   });
 
+  // characterization tests pinning the @type coercion the resolver attaches
+  // to a mapping. The coercion rule (ctx/missing-coercion) depends on these
+  // exact values, so any change to how @type is extracted must preserve them.
+  it('carries a datatype coercion as an absolute IRI', async () => {
+    const ctx = {
+      ex: 'https://example.org/v#',
+      age: {'@id': 'ex:age', '@type': 'http://www.w3.org/2001/XMLSchema#integer'}
+    };
+    const {mappings} = await resolveContext({'@context': ctx});
+    const age = mappings.find(m => m.term === 'age');
+    expect(age.coercion).to.equal('http://www.w3.org/2001/XMLSchema#integer');
+  });
+
+  it('carries an @id coercion as the keyword @id', async () => {
+    const ctx = {
+      ex: 'https://example.org/v#',
+      knows: {'@id': 'ex:knows', '@type': '@id'}
+    };
+    const {mappings} = await resolveContext({'@context': ctx});
+    const knows = mappings.find(m => m.term === 'knows');
+    expect(knows.coercion).to.equal('@id');
+  });
+
+  it('expands a CURIE datatype coercion against its prefix', async () => {
+    const ctx = {
+      ex: 'https://example.org/v#',
+      xsd: 'http://www.w3.org/2001/XMLSchema#',
+      age: {'@id': 'ex:age', '@type': 'xsd:integer'}
+    };
+    const {mappings} = await resolveContext({'@context': ctx});
+    const age = mappings.find(m => m.term === 'age');
+    expect(age.coercion).to.equal('http://www.w3.org/2001/XMLSchema#integer');
+  });
+
+  it('omits coercion for a term with no @type', async () => {
+    const ctx = {ex: 'https://example.org/v#', name: 'ex:name'};
+    const {mappings} = await resolveContext({'@context': ctx});
+    const name = mappings.find(m => m.term === 'name');
+    expect(name).to.not.have.property('coercion');
+  });
+
   it('does not emit a mapping for prefix entries themselves', async () => {
     const ctx = {ex: 'https://example.org/v#', name: 'ex:name'};
     const {mappings} = await resolveContext({'@context': ctx});
