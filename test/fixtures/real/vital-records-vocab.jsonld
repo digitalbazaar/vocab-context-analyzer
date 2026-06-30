@@ -1,0 +1,1126 @@
+{
+    "@context": {
+        "vital": "https://w3id.org/vital-records#",
+        "schema": "http://schema.org/",
+        "dc": "http://purl.org/dc/terms/",
+        "owl": "http://www.w3.org/2002/07/owl#",
+        "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+        "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+        "xsd": "http://www.w3.org/2001/XMLSchema#",
+        "vs": "http://www.w3.org/2003/06/sw-vocab-status/ns#",
+        "jsonld": "http://www.w3.org/ns/json-ld#",
+        "dc:date": {
+            "@type": "xsd:date"
+        },
+        "rdfs:domain": {
+            "@type": "@id"
+        },
+        "rdfs:range": {
+            "@type": "@id"
+        },
+        "rdfs:seeAlso": {
+            "@type": "@id"
+        },
+        "rdfs:subClassOf": {
+            "@type": "@id"
+        },
+        "rdfs:subPropertyOf": {
+            "@type": "@id"
+        },
+        "rdfs:isDefinedBy": {
+            "@type": "@id"
+        },
+        "owl:oneOf": {
+            "@container": "@list",
+            "@type": "@vocab"
+        },
+        "owl:deprecated": {
+            "@type": "xsd:boolean"
+        },
+        "owl:inverseOf": {
+            "@type": "@vocab"
+        },
+        "owl:unionOf": {
+            "@container": "@list",
+            "@type": "@vocab"
+        },
+        "rdfs_classes": {
+            "@reverse": "rdfs:isDefinedBy",
+            "@type": "@id"
+        },
+        "rdfs_properties": {
+            "@reverse": "rdfs:isDefinedBy",
+            "@type": "@id"
+        },
+        "rdfs_individuals": {
+            "@reverse": "rdfs:isDefinedBy",
+            "@type": "@id"
+        },
+        "rdfs_datatypes": {
+            "@reverse": "rdfs:isDefinedBy",
+            "@type": "@id"
+        },
+        "mentioned": {
+            "@reverse": "schema:mentions",
+            "@type": "@id"
+        }
+    },
+    "@id": "https://w3id.org/vital-records#",
+    "@type": "owl:Ontology",
+    "dc:title": {
+        "@value": "Vital Records Vocabulary",
+        "@language": "en"
+    },
+    "dc:abstract": {
+        "@value": "The Vital Records Vocabulary is designed to structure information about vital statistics such as birth, death, and other related events. It consists of several classes that each represent different aspects, like individuals, events, and locations. Additionally, there are properties that describe details such as dates, names, and places, helping to provide a comprehensive understanding of personal and demographic information. This vocabulary helps to ensure that vital records can be easily shared and understood across different systems and users.",
+        "@language": "en"
+    },
+    "dc:description": {
+        "@value": "<div>\n<p>The Vital Records Vocabulary is a structured framework designed to manage and share essential information related to life's most significant events, such as birth, marriage, and death. By standardizing these records, it becomes easier for organizations and institutions to communicate accurately and efficiently, avoiding misunderstandings and ensuring the information is used correctly.</p>\n\n<p>This vocabulary is used to provide a consistent way of sharing widely varied information. Imagine trying to navigate through different systems, each with its own method of recording data; it would be chaotic and troublesome. Using a unified vocabulary simplifies this process, enabling smoother interaction between systems and individuals who need to access these records, from healthcare providers to government agencies.</p>\n\n<p>Several market verticals stand to gain significantly from the application of the Vital Records Vocabulary. Governments, healthcare systems, educational institutions, and legal entities, among others, need accurate and reliable data for decision-making, planning, and service provision. For example, hospitals can use it to track patient records from birth, ensuring each individual receives the healthcare they need throughout their lives. Similarly, government agencies can more effectively manage population data, aiding in policy development and public service delivery.</p>\n\n<p>The vocabulary supports a variety of use cases by addressing the need for detailed and accessible information. In the healthcare industry, having precise birth records can ensure continuity of care as a person grows and seeks various medical services. In the legal field, marriage and death records are crucial for managing legal affairs such as inheritance and estate planning. Schools and universities can also benefit by utilizing the standardized information for managing student enrollments and alumni records.</p>\n\n<p>To implement the Vital Records Vocabulary successfully, certain requirements should be met. These include ensuring data privacy and security and maintaining the integrity and accuracy of records. It is crucial that any system implementing this vocabulary also supports easy integration with existing databases and platforms, enabling seamless updates and access.</p>\n\n<p>Overall, the Vital Records Vocabulary provides a comprehensive framework essential for managing critical personal data. It fosters a reliable and efficient environment for various sectors to operate, leading to better service delivery, enhanced cooperation, and improved outcomes for everyone involved, from individuals to entire communities.</p>\n</div>",
+        "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+    },
+    "dc:date": "2026-06-30",
+    "rdfs_properties": [{
+        "@id": "vital:abnormalCondition",
+        "@type": ["rdf:Property", "owl:DatatypeProperty"],
+        "rdfs:domain": "vital:Newborn",
+        "rdfs:range": "xsd:string",
+        "rdfs:label": "Abnormal Condition",
+        "rdfs:comment": {
+            "@value": "<div>This property identifies any abnormal conditions present in the newborn after birth. Choices include Assisted ventilation required immediately following delivery, Assisted ventilation required for more than six hours, NICU admission, Newborn given surfactant replacement therapy, Antibiotics received by the newborn for suspected neonatal sepsis, Seizure or serious neurologic dysfunction, and Significant birth injury (such as skeletal fracture(s), peripheral nerve injury, and/or soft tissue/solid organ hemorrhage that requires intervention). It may also be indicated that none of these conditions apply.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:apgarScore",
+        "@type": ["rdf:Property", "owl:ObjectProperty"],
+        "rdfs:domain": "vital:Newborn",
+        "rdfs:range": "schema:Observation",
+        "rdfs:label": "Apgar Score",
+        "rdfs:comment": {
+            "@value": "<div>This property captures the Apgar score observation for a newborn. The Apgar score is a quick test performed on a newborn at 1 and 5 minutes after birth. The 1-minute score determines how well the baby tolerated the birthing process. The 5-minute score tells the healthcare provider how well the baby is doing outside the mother's womb. The test assesses five criteria on a scale from 0 to 2, with 2 being the best score: Appearance, Pulse, Grimace response, Activity, and Respiration.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:attendant",
+        "@type": ["rdf:Property", "owl:ObjectProperty"],
+        "rdfs:domain": "vital:BirthCertificate",
+        "rdfs:range": "vital:Attendant",
+        "rdfs:label": "Attendant",
+        "rdfs:comment": {
+            "@value": "<div>The attendant responsible for assisting during the birth, recorded on the birth certificate.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:birthDate",
+        "@type": ["rdf:Property", "owl:DatatypeProperty"],
+        "rdfs:domain": {
+            "@type": "owl:Class",
+            "owl:unionOf": ["vital:Newborn", "vital:Mother", "vital:Father"]
+        },
+        "rdfs:range": "xsd:dateTime",
+        "rdfs:label": "Birth Date",
+        "rdfs:comment": {
+            "@value": "<div>The date and time of birth for a newborn, mother, or father.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:birthLength",
+        "@type": ["rdf:Property", "owl:ObjectProperty"],
+        "rdfs:domain": "vital:Newborn",
+        "rdfs:range": "schema:Observation",
+        "rdfs:label": "Birth Length",
+        "rdfs:comment": {
+            "@value": "<div>The length of the newborn measured at birth.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:birthLocationDescription",
+        "@type": ["rdf:Property", "owl:DatatypeProperty"],
+        "rdfs:domain": "vital:Facility",
+        "rdfs:range": "xsd:string",
+        "rdfs:label": "Birth Location Description",
+        "rdfs:comment": {
+            "@value": "<div>The description of the birth location, with choices such as Hospital, Freestanding birthing center, Home Birth: Planned to deliver at home? Yes/No, Clinic/Doctor's office, Other (Specify).</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:birthOrder",
+        "@type": ["rdf:Property", "owl:DatatypeProperty"],
+        "rdfs:domain": "vital:Newborn",
+        "rdfs:range": "xsd:string",
+        "rdfs:label": "Birth Order",
+        "rdfs:comment": {
+            "@value": "<div>This property indicates the birth order of the newborn, noting whether the newborn was born First, Second, Third, etc.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:birthPlace",
+        "@type": ["rdf:Property", "owl:ObjectProperty"],
+        "rdfs:domain": {
+            "@type": "owl:Class",
+            "owl:unionOf": ["vital:Newborn", "vital:Mother", "vital:Father"]
+        },
+        "rdfs:range": "schema:PostalAddress",
+        "rdfs:label": "Birth Place",
+        "rdfs:comment": {
+            "@value": "<div>The place of birth for a newborn, mother, or father, represented as a postal address.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:birthPlurality",
+        "@type": ["rdf:Property", "owl:DatatypeProperty"],
+        "rdfs:domain": "vital:Newborn",
+        "rdfs:range": "xsd:string",
+        "rdfs:label": "Birth Plurality",
+        "rdfs:comment": {
+            "@value": "<div>This property specifies the birth plurality for a newborn, with choices including Single, Twin, Triplet, etc.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:birthWeight",
+        "@type": ["rdf:Property", "owl:ObjectProperty"],
+        "rdfs:domain": "vital:Newborn",
+        "rdfs:range": "schema:Observation",
+        "rdfs:label": "Birth Weight",
+        "rdfs:comment": {
+            "@value": "<div>This property represents the birth weight observation recorded for a newborn.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:breastfed",
+        "@type": ["rdf:Property", "owl:DatatypeProperty"],
+        "rdfs:domain": "vital:Newborn",
+        "rdfs:range": "xsd:boolean",
+        "rdfs:label": "Breastfed",
+        "rdfs:comment": {
+            "@value": "<div>This property indicates whether the newborn was breastfed.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:certificationDate",
+        "@type": ["rdf:Property", "owl:DatatypeProperty"],
+        "rdfs:domain": "vital:BirthCertificate",
+        "rdfs:range": "xsd:dateTime",
+        "rdfs:label": "Certification Date",
+        "rdfs:comment": {
+            "@value": "<div>The date and time when the birth certificate was certified.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:certificateNumber",
+        "@type": ["rdf:Property", "owl:DatatypeProperty"],
+        "rdfs:domain": "vital:BirthCertificate",
+        "rdfs:range": "xsd:string",
+        "rdfs:label": "Certificate Number",
+        "rdfs:comment": {
+            "@value": "<div>A unique number or identifier assigned to the birth certificate document for tracking and reference purposes. This is typically assigned by the issuing authority and differs from other identifiers like facility identifiers or medical record numbers.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:certifier",
+        "@type": ["rdf:Property", "owl:ObjectProperty"],
+        "rdfs:domain": "vital:BirthCertificate",
+        "rdfs:range": "vital:Certifier",
+        "rdfs:label": "Certifier",
+        "rdfs:comment": {
+            "@value": "<div>The certifier responsible for verifying and certifying the information on the birth certificate.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:cigaretteUsage",
+        "@type": ["rdf:Property", "owl:DatatypeProperty"],
+        "rdfs:domain": "vital:Mother",
+        "rdfs:range": "xsd:string",
+        "rdfs:label": "Cigarette Usage",
+        "rdfs:comment": {
+            "@value": "<div>The number of cigarettes or packs the mother used, detailing usage three months before pregnancy, during the first three months, the second three months, and the last three months of pregnancy.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:congenitalAnomaly",
+        "@type": ["rdf:Property", "owl:DatatypeProperty"],
+        "rdfs:domain": "vital:Newborn",
+        "rdfs:range": "xsd:string",
+        "rdfs:label": "Congenital Anomaly",
+        "rdfs:comment": {
+            "@value": "<div>This property identifies any congenital anomalies present in the newborn. Choices include Anencephaly, Meningomyelocele/Spina bifida, Cyanotic congenital heart disease, Congenital diaphragmatic hernia, Omphalocele, Gastroschisis, Limb reduction defect (excluding congenital amputation and dwarfing syndromes), Cleft Lip with or without Cleft Palate, Cleft Palate alone, Down Syndrome (with options for Karyotype confirmed or Karyotype pending), and Suspected chromosomal disorder (with options for Karyotype confirmed or Karyotype pending). It may also be indicated that none of the anomalies listed above apply.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:county",
+        "@type": ["rdf:Property", "owl:DatatypeProperty"],
+        "rdfs:domain": "vital:Facility",
+        "rdfs:range": "xsd:string",
+        "rdfs:label": "County",
+        "rdfs:comment": {
+            "@value": "<div>The county where the facility is located.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:educationLevel",
+        "@type": ["rdf:Property", "owl:DatatypeProperty"],
+        "rdfs:domain": {
+            "@type": "owl:Class",
+            "owl:unionOf": ["vital:Mother", "vital:Father"]
+        },
+        "rdfs:range": "xsd:string",
+        "rdfs:label": "Education Level",
+        "rdfs:comment": {
+            "@value": "<div>The education level of the mother or father, with choices such as 8th grade or less, 9th - 12th grade no diploma, high school graduate or GED completed, some college credit but no degree, associate degree (e.g., AA, AS), bachelor's degree (e.g., BA, AB, BS), master's degree (e.g., MA, MS, MEng, MEd, MSW, MBA), doctorate (e.g., PhD, EdD) or professional degree (e.g., MD, DDS, DVM, LLB, JD).</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:eventDate",
+        "@type": ["rdf:Property", "owl:DatatypeProperty"],
+        "rdfs:domain": "vital:PregnancyOutcome",
+        "rdfs:range": "xsd:dateTime",
+        "rdfs:label": "Event Date",
+        "rdfs:comment": {
+            "@value": "<div>The date and time when the pregnancy outcome event occurred.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:facility",
+        "@type": ["rdf:Property", "owl:ObjectProperty"],
+        "rdfs:domain": "vital:BirthCertificate",
+        "rdfs:range": "vital:Facility",
+        "rdfs:label": "Facility",
+        "rdfs:comment": {
+            "@value": "<div>The facility where the birth took place, which is recorded on the birth certificate.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:facilityIdentifier",
+        "@type": ["rdf:Property", "owl:DatatypeProperty"],
+        "rdfs:domain": "vital:Facility",
+        "rdfs:range": "xsd:string",
+        "rdfs:label": "Facility Identifier",
+        "rdfs:comment": {
+            "@value": "<div>The identifier for the facility, which is usually the NPI (National Provider Identifier) number.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:firstPrenatalVisitDate",
+        "@type": ["rdf:Property", "owl:DatatypeProperty"],
+        "rdfs:domain": "vital:Newborn",
+        "rdfs:range": "xsd:dateTime",
+        "rdfs:label": "First Prenatal Visit Date",
+        "rdfs:comment": {
+            "@value": "<div>The date and time of the mother's first prenatal visit during the pregnancy.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:foodAssistanceDuringPregnancy",
+        "@type": ["rdf:Property", "owl:DatatypeProperty"],
+        "rdfs:domain": "vital:Mother",
+        "rdfs:range": "xsd:boolean",
+        "rdfs:label": "Food Assistance During Pregnancy",
+        "rdfs:comment": {
+            "@value": "<div>Indicates whether the mother received food assistance during pregnancy.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:gender",
+        "@type": ["rdf:Property", "owl:DatatypeProperty"],
+        "rdfs:domain": "vital:Newborn",
+        "rdfs:range": "xsd:string",
+        "rdfs:label": "Gender",
+        "rdfs:comment": {
+            "@value": "<div>The gender of the newborn, typically specified as male, female, or non-binary.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:sex",
+        "@type": ["rdf:Property", "owl:DatatypeProperty"],
+        "rdfs:domain": "vital:Newborn",
+        "rdfs:range": "xsd:string",
+        "rdfs:label": "Sex",
+        "rdfs:comment": {
+            "@value": "<div>The biological sex of the newborn, typically specified as male or female.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:gestationEstimation",
+        "@type": ["rdf:Property", "owl:ObjectProperty"],
+        "rdfs:domain": "vital:Newborn",
+        "rdfs:range": "schema:Observation",
+        "rdfs:label": "Gestation Estimation",
+        "rdfs:comment": {
+            "@value": "<div>This property specifies the estimated gestation period observation for a newborn.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:height",
+        "@type": ["rdf:Property", "owl:ObjectProperty"],
+        "rdfs:domain": {
+            "@type": "owl:Class",
+            "owl:unionOf": ["vital:Mother", "vital:Newborn"]
+        },
+        "rdfs:range": "schema:Observation",
+        "rdfs:label": "Height",
+        "rdfs:comment": {
+            "@value": "<div>The height observation of the mother or newborn.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:hispanicBackground",
+        "@type": ["rdf:Property", "owl:DatatypeProperty"],
+        "rdfs:domain": {
+            "@type": "owl:Class",
+            "owl:unionOf": ["vital:Mother", "vital:Father"]
+        },
+        "rdfs:range": "xsd:string",
+        "rdfs:label": "Hispanic Background",
+        "rdfs:comment": {
+            "@value": "<div>The Hispanic background of the mother or father, with choices such as No, not Spanish/Hispanic/Latina; Yes, Mexican, Mexican American, Chicana; Yes, Puerto Rican; Yes, Cuban; Yes, other Spanish/Hispanic/Latina.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:infectionPresentOrTreated",
+        "@type": ["rdf:Property", "owl:DatatypeProperty"],
+        "rdfs:domain": "vital:Newborn",
+        "rdfs:range": "xsd:string",
+        "rdfs:label": "Infection Present or Treated",
+        "rdfs:comment": {
+            "@value": "<div>This property specifies whether any infections were present or treated in relation to a newborn. The choices available for documentation include Gonorrhea, Syphilis, Herpes Simplex Virus (HSV), Chlamydia, Hepatitis B, and Hepatitis C. It may also be the case that none of these infections are present or treated.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:laborAndDeliveryCharacteristic",
+        "@type": ["rdf:Property", "owl:DatatypeProperty"],
+        "rdfs:domain": "vital:Newborn",
+        "rdfs:range": "xsd:string",
+        "rdfs:label": "Labor and Delivery Characteristic",
+        "rdfs:comment": {
+            "@value": "<div>This property denotes the characteristics of labor and delivery pertaining to a newborn. Possible choices include Induction of labor, Augmentation of labor, and Non-vertex presentation. In addition, it can be noted if Steroids (glucocorticoids) for fetal lung maturation were received by the mother prior to delivery, if Antibiotics were administered to the mother during labor, or if Clinical chorioamnionitis was diagnosed during labor or in cases where maternal temperature exceeded 38°C (100.4°F). Other considerations are Moderate/heavy meconium staining of the amniotic fluid and Fetal intolerance of labor, leading to one or more interventions such as in-utero resuscitative measures, further fetal assessment, or operative delivery. It also records if Epidural or spinal anesthesia was used during labor or if none of these characteristics apply.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:laborOnset",
+        "@type": ["rdf:Property", "owl:DatatypeProperty"],
+        "rdfs:domain": "vital:Newborn",
+        "rdfs:range": "xsd:string",
+        "rdfs:label": "Labor Onset",
+        "rdfs:comment": {
+            "@value": "<div>This property records the onset conditions of labor associated with a newborn. The choices to document labor onset include Premature Rupture of the Membranes, which is prolonged (lasting 12 hours or more), Precipitous Labor, occurring in less than 3 hours, and Prolonged Labor, lasting 20 hours or more. It can also be documented that none of these conditions apply.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:lastMensesDate",
+        "@type": ["rdf:Property", "owl:DatatypeProperty"],
+        "rdfs:domain": "vital:Mother",
+        "rdfs:range": "xsd:date",
+        "rdfs:label": "Last Menses Date",
+        "rdfs:comment": {
+            "@value": "<div>The date of the mother's last menstrual period prior to pregnancy.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:lastPrenatalVisitDate",
+        "@type": ["rdf:Property", "owl:DatatypeProperty"],
+        "rdfs:domain": "vital:Newborn",
+        "rdfs:range": "xsd:dateTime",
+        "rdfs:label": "Last Prenatal Visit Date",
+        "rdfs:comment": {
+            "@value": "<div>The date and time of the mother's last prenatal visit during the pregnancy.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:liveBirth",
+        "@type": ["rdf:Property", "owl:DatatypeProperty"],
+        "rdfs:domain": "vital:PregnancyOutcome",
+        "rdfs:range": "xsd:boolean",
+        "rdfs:label": "Live Birth",
+        "rdfs:comment": {
+            "@value": "<div>Indicates whether the pregnancy resulted in a live birth.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:mailingAddress",
+        "@type": ["rdf:Property", "owl:ObjectProperty"],
+        "rdfs:domain": {
+            "@type": "owl:Class",
+            "owl:unionOf": ["vital:Mother", "vital:Father"]
+        },
+        "rdfs:range": "schema:PostalAddress",
+        "rdfs:label": "Mailing Address",
+        "rdfs:comment": {
+            "@value": "<div>The mailing address for the mother or father, represented as a postal address.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:married",
+        "@type": ["rdf:Property", "owl:DatatypeProperty"],
+        "rdfs:domain": "vital:Mother",
+        "rdfs:range": "xsd:boolean",
+        "rdfs:label": "Married",
+        "rdfs:comment": {
+            "@value": "<div>Indicates whether the mother is married.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:maternalMorbidity",
+        "@type": ["rdf:Property", "owl:DatatypeProperty"],
+        "rdfs:domain": "vital:Newborn",
+        "rdfs:range": "xsd:string",
+        "rdfs:label": "Maternal Morbidity",
+        "rdfs:comment": {
+            "@value": "<div>This property captures instances of maternal morbidity associated with a newborn. The choices for recording such instances include Maternal transfusion, Third or fourth degree perineal laceration, Ruptured uterus, Unplanned hysterectomy, Admission to intensive care unit, and Unplanned operating room procedure following delivery. It also allows for the indication that none of these conditions apply.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:maternalRiskFactor",
+        "@type": ["rdf:Property", "owl:DatatypeProperty"],
+        "rdfs:domain": "vital:Newborn",
+        "rdfs:range": "xsd:string",
+        "rdfs:label": "Maternal Risk Factor",
+        "rdfs:comment": {
+            "@value": "<div>This property identifies the maternal risk factors present in relation to a newborn. Choices include Diabetes, which can be categorized as either Prepregnancy, diagnosed prior to this pregnancy, or Gestational, diagnosed in this pregnancy. Other risk factors are Hypertension, which may be Prepregnancy, chronic, or Gestational, such as PIH, preeclampsia, or eclampsia. Additional risks include previous preterm birth; other previous poor pregnancy outcomes, which include perinatal death or small-for-gestational age/intrauterine growth restriction; vaginal bleeding during this pregnancy prior to the onset of labor; pregnancies that resulted from infertility treatment; and if the mother had a previous cesarean delivery. In such cases, the number of cesareans should be noted. Alternatively, it could be that none of these risk factors are present.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:medicalRecordNumber",
+        "@type": ["rdf:Property", "owl:DatatypeProperty"],
+        "rdfs:domain": {
+            "@type": "owl:Class",
+            "owl:unionOf": ["vital:Mother", "vital:Newborn"]
+        },
+        "rdfs:range": "xsd:string",
+        "rdfs:label": "Medical Record Number",
+        "rdfs:comment": {
+            "@value": "<div>The medical record number associated with the mother's health records.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:methodOfDelivery",
+        "@type": ["rdf:Property", "owl:DatatypeProperty"],
+        "rdfs:domain": "vital:Newborn",
+        "rdfs:range": "xsd:string",
+        "rdfs:label": "Method of Delivery",
+        "rdfs:comment": {
+            "@value": "<div>This property outlines the method of delivery for a newborn. It includes questions about the use of forceps or vacuum extraction and their success. Specifically, it asks whether delivery with forceps was attempted but unsuccessful or whether delivery with vacuum extraction was attempted but unsuccessful. It also records the fetal presentation at birth, which could be Cephalic, Breech, or Other. The final route and method of delivery are documented with options including Vaginal/Spontaneous, Vaginal/Forceps, Vaginal/Vacuum, or Cesarean delivery. If Cesarean, it asks whether a trial of labor was attempted, with choices of Yes or No.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:namePriorToMarriage",
+        "@type": ["rdf:Property", "owl:DatatypeProperty"],
+        "rdfs:domain": {
+            "@type": "owl:Class",
+            "owl:unionOf": ["vital:Mother", "vital:Father"]
+        },
+        "rdfs:range": "xsd:string",
+        "rdfs:label": "Name Prior to Marriage",
+        "rdfs:comment": {
+            "@value": "<div>The name of the person (mother or father) before they were married.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:newborn",
+        "@type": ["rdf:Property", "owl:ObjectProperty"],
+        "rdfs:domain": "vital:BirthCertificate",
+        "rdfs:range": "vital:Newborn",
+        "rdfs:label": "Newborn",
+        "rdfs:comment": {
+            "@value": "<div>Refers to the newborn individual associated with the birth certificate, containing information such as their name, date of birth, and physical characteristics.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:obstetricProcedure",
+        "@type": ["rdf:Property", "owl:DatatypeProperty"],
+        "rdfs:domain": "vital:Newborn",
+        "rdfs:range": "xsd:string",
+        "rdfs:label": "Obstetric Procedure",
+        "rdfs:comment": {
+            "@value": "<div>This property captures the obstetric procedures that were performed in relation to a newborn. The choices for recording these procedures include Cervical cerclage and Tocolysis. Additionally, an External cephalic version may be noted as either successful or failed. Alternatively, it may be indicated that none of the mentioned procedures were performed.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:otherOutcome",
+        "@type": ["rdf:Property", "owl:DatatypeProperty"],
+        "rdfs:domain": "vital:PregnancyOutcome",
+        "rdfs:range": "xsd:string",
+        "rdfs:label": "Other Outcome",
+        "rdfs:comment": {
+            "@value": "<div>Details about any other outcomes of the pregnancy not covered by predefined categories.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:parent",
+        "@type": ["rdf:Property", "owl:ObjectProperty"],
+        "rdfs:domain": "vital:Newborn",
+        "rdfs:range": ["vital:Mother", "vital:Father"],
+        "rdfs:label": "Parent",
+        "rdfs:comment": {
+            "@value": "<div>Denotes the parent or parents of the newborn, identifying both the mother and father, and including information regarding their names, relationship to the child, and contact details.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:paternityAcknowledgement",
+        "@type": ["rdf:Property", "owl:DatatypeProperty"],
+        "rdfs:domain": "vital:BirthCertificate",
+        "rdfs:range": "xsd:boolean",
+        "rdfs:label": "Paternity Acknowledgement",
+        "rdfs:comment": {
+            "@value": "<div>Indicates whether paternity acknowledgment has been made on the birth certificate.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:paymentSource",
+        "@type": ["rdf:Property", "owl:DatatypeProperty"],
+        "rdfs:domain": "vital:BirthCertificate",
+        "rdfs:range": "xsd:string",
+        "rdfs:label": "Payment Source",
+        "rdfs:comment": {
+            "@value": "<div>The source of payment for the birth, specifying if it is Private Insurance, Medicaid, Self-pay, or Other (Specify).</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:prePregnancyWeight",
+        "@type": ["rdf:Property", "owl:ObjectProperty"],
+        "rdfs:domain": "vital:Mother",
+        "rdfs:range": "schema:Observation",
+        "rdfs:label": "Pre-pregnancy Weight",
+        "rdfs:comment": {
+            "@value": "<div>The pre-pregnancy weight observation of the mother.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:pregnancyOutcome",
+        "@type": ["rdf:Property", "owl:ObjectProperty"],
+        "rdfs:domain": "vital:Mother",
+        "rdfs:range": "vital:PregnancyOutcome",
+        "rdfs:label": "Pregnancy Outcome",
+        "rdfs:comment": {
+            "@value": "<div>The outcome of the mother's pregnancy, detailing the results or implications of the pregnancy.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:race",
+        "@type": ["rdf:Property", "owl:DatatypeProperty"],
+        "rdfs:domain": {
+            "@type": "owl:Class",
+            "owl:unionOf": ["vital:Mother", "vital:Father"]
+        },
+        "rdfs:range": "xsd:string",
+        "rdfs:label": "Race",
+        "rdfs:comment": {
+            "@value": "<div>The race of the mother or father, with choices such as White, Black or African American, American Indian or Alaska Native (Name of the enrolled or principal tribe), Asian Indian, Chinese, Filipino, Japanese, Korean, Vietnamese, Other Asian (Specify), Native Hawaiian, Guamanian or Chamorro, Samoan, Other Pacific Islander (Specify), Other (Specify).</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:registrationDate",
+        "@type": ["rdf:Property", "owl:DatatypeProperty"],
+        "rdfs:domain": "vital:BirthCertificate",
+        "rdfs:range": "xsd:dateTime",
+        "rdfs:label": "Registration Date",
+        "rdfs:comment": {
+            "@value": "<div>The date and time when the birth certificate was officially registered.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:residenceAddress",
+        "@type": ["rdf:Property", "owl:ObjectProperty"],
+        "rdfs:domain": {
+            "@type": "owl:Class",
+            "owl:unionOf": ["vital:Mother", "vital:Father"]
+        },
+        "rdfs:range": "schema:PostalAddress",
+        "rdfs:label": "Residence Address",
+        "rdfs:comment": {
+            "@value": "<div>The residence address of the mother or father, represented as a postal address.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:socialSecurityNumber",
+        "@type": ["rdf:Property", "owl:DatatypeProperty"],
+        "rdfs:domain": {
+            "@type": "owl:Class",
+            "owl:unionOf": ["vital:Mother", "vital:Father"]
+        },
+        "rdfs:range": "xsd:string",
+        "rdfs:label": "Social Security Number",
+        "rdfs:comment": {
+            "@value": "<div>The Social Security Number of the mother or father.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:ssnRequested",
+        "@type": ["rdf:Property", "owl:DatatypeProperty"],
+        "rdfs:domain": "vital:BirthCertificate",
+        "rdfs:range": "xsd:boolean",
+        "rdfs:label": "SSN Requested",
+        "rdfs:comment": {
+            "@value": "<div>Indicates whether a Social Security Number has been requested on the birth certificate.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:status",
+        "@type": ["rdf:Property", "owl:DatatypeProperty"],
+        "rdfs:domain": "vital:Newborn",
+        "rdfs:range": "xsd:string",
+        "rdfs:label": "Status",
+        "rdfs:comment": {
+            "@value": "<div>This property specifies the status of the newborn, which can include living, deceased, or transferred (unknown).</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:totalPrenatalVisits",
+        "@type": ["rdf:Property", "owl:DatatypeProperty"],
+        "rdfs:domain": "vital:Newborn",
+        "rdfs:range": "xsd:positiveInteger",
+        "rdfs:label": "Total Prenatal Visits",
+        "rdfs:comment": {
+            "@value": "<div>The total number of prenatal visits attended by the mother during the pregnancy.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:transferEvent",
+        "@type": ["rdf:Property", "owl:ObjectProperty"],
+        "rdfs:domain": "vital:BirthCertificate",
+        "rdfs:range": "schema:Event",
+        "rdfs:label": "Transfer Event",
+        "rdfs:comment": {
+            "@value": "<div>An event indicating a transfer, such as when the birthing mother is transferred from one facility to another, recorded on the birth certificate.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:transferredToFacility",
+        "@type": ["rdf:Property", "owl:ObjectProperty"],
+        "rdfs:domain": "vital:Newborn",
+        "rdfs:range": "vital:Facility",
+        "rdfs:label": "Transferred to Facility",
+        "rdfs:comment": {
+            "@value": "<div>This property indicates the facility to which the newborn was transferred.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:weightAtDelivery",
+        "@type": ["rdf:Property", "owl:ObjectProperty"],
+        "rdfs:domain": "vital:Mother",
+        "rdfs:range": "schema:Observation",
+        "rdfs:label": "Weight at Delivery",
+        "rdfs:comment": {
+            "@value": "<div>The weight observation of the mother at the time of delivery.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }],
+    "rdfs_classes": [{
+        "@id": "vital:Attendant",
+        "@type": "rdfs:Class",
+        "rdfs:subClassOf": ["schema:Person"],
+        "rdfs:label": "Attendant",
+        "rdfs:comment": {
+            "@value": "<div>An individual who assists during the birth, such as a midwife or physician.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:BirthCertificate",
+        "@type": "rdfs:Class",
+        "rdfs:label": "Birth Certificate",
+        "rdfs:comment": {
+            "@value": "<div>A document certifying the birth of a person including relevant details such as name, date, and place of birth.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:BirthCertificateCredential",
+        "@type": "rdfs:Class",
+        "rdfs:label": "Birth Certificate Credential",
+        "rdfs:comment": {
+            "@value": "<div>A credential that serves as an official record of a person's birth, providing information such as the individual's name, date of birth, place of birth, and parentage. It is often used as a vital document for legal identification and verification purposes.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:Certifier",
+        "@type": "rdfs:Class",
+        "rdfs:subClassOf": ["schema:Person"],
+        "rdfs:label": "Certifier",
+        "rdfs:comment": {
+            "@value": "<div>The authorized individual who certifies the birth event.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:Facility",
+        "@type": "rdfs:Class",
+        "rdfs:subClassOf": ["schema:Place"],
+        "rdfs:label": "Facility",
+        "rdfs:comment": {
+            "@value": "<div>The place or institution where the newborn was delivered.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:Father",
+        "@type": "rdfs:Class",
+        "rdfs:subClassOf": ["schema:Person"],
+        "rdfs:label": "Father",
+        "rdfs:comment": {
+            "@value": "<div>The male parent of the newborn on the birth certificate.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:Mother",
+        "@type": "rdfs:Class",
+        "rdfs:subClassOf": ["schema:Person"],
+        "rdfs:label": "Mother",
+        "rdfs:comment": {
+            "@value": "<div>The female parent of the newborn on the birth certificate.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:Newborn",
+        "@type": "rdfs:Class",
+        "rdfs:subClassOf": ["schema:Person"],
+        "rdfs:label": "Newborn",
+        "rdfs:comment": {
+            "@value": "<div>A newborn child who is the subject of the birth certificate.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }, {
+        "@id": "vital:PregnancyOutcome",
+        "@type": "rdfs:Class",
+        "rdfs:label": "Pregnancy Outcome",
+        "rdfs:comment": {
+            "@value": "<div>The result or consequence of a pregnancy, including any pertinent outcomes related to the birth or health of the mother or newborn.</div>",
+            "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+        },
+        "vs:term_status": "stable",
+        "mentioned": [{
+            "@id": "https://w3id.org/vital-records/v1rc4",
+            "@type": "jsonld:Context"
+        }]
+    }]
+}

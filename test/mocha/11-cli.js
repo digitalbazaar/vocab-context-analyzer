@@ -109,3 +109,69 @@ describe('cli: run', () => {
     expect(stderr).to.contain('Analysis failed');
   });
 });
+
+// --yaml mode builds the vocabulary from a vocabulary.yml SOURCE via yml2vocab,
+// then analyzes the generated output (SPEC-build-check §3.2). A build failure
+// is terminal: the build finding is reported and the rule engine never runs.
+// The yaml source is raw text, so it is read via readTextFn (not the JSON
+// readFileFn used for --vocab/--context).
+describe('cli: run --yaml (build-check mode)', () => {
+  const readTextFn = async () => 'yaml-source-text';
+  const buildOk = async () => ({
+    vocab: {vocab: true}, context: {context: true}
+  });
+
+  function buildFailing(buildFinding) {
+    return async () => ({buildFinding});
+  }
+
+  const buildFinding = createFinding({
+    id: 'build/yml2vocab-fails', severity: SEVERITY.error,
+    artifact: ARTIFACT.vocabulary,
+    message: 'yml2vocab cannot build the vocabulary: bad range.',
+    remediation: 'Fix it.'
+  });
+
+  it('builds then analyzes, exiting 0 on a clean build with no findings',
+    async () => {
+      const {code, stdout} = await run(['--yaml', 'vocab.yml'], {
+        readTextFn, buildFromSourceFn: buildOk,
+        loadModelFn, runRulesFn: rulesReturning([])
+      });
+      expect(code).to.equal(0);
+      expect(stdout).to.match(/no findings/i);
+    });
+
+  it('reports the build finding and exits 1 when the build fails', async () => {
+    const {code, stdout} = await run(
+      ['--yaml', 'vocab.yml', '--format', 'json'], {
+        readTextFn, buildFromSourceFn: buildFailing(buildFinding),
+        loadModelFn, runRulesFn: rulesReturning([])
+      });
+    expect(code).to.equal(1);
+    const parsed = JSON.parse(stdout);
+    expect(parsed.findings).to.have.lengthOf(1);
+    expect(parsed.findings[0].id).to.equal('build/yml2vocab-fails');
+  });
+
+  it('does NOT run the rules when the build fails (terminal)', async () => {
+    let rulesRan = false;
+    await run(['--yaml', 'vocab.yml'], {
+      readTextFn, buildFromSourceFn: buildFailing(buildFinding),
+      loadModelFn,
+      runRulesFn: () => {
+        rulesRan = true;
+        return [];
+      }
+    });
+    expect(rulesRan, 'rules should not run after a failed build').to.be.false;
+  });
+
+  it('exits 2 when --yaml is combined with --vocab', async () => {
+    const {code, stderr} = await run(
+      ['--yaml', 'vocab.yml', '--vocab', 'v.jsonld'],
+      {readTextFn, buildFromSourceFn: buildOk});
+    expect(code).to.equal(2);
+    expect(stderr).to.match(/cannot be combined|incompatible|both/i);
+  });
+});

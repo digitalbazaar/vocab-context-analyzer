@@ -1,0 +1,22 @@
+vocab:
+  id: ex
+  value: https://example.org/v#
+  context: https://example.org/v.context.jsonld
+
+ontology:
+  - property: dc:title
+    value: Build-Check Valid Example
+  - property: dc:description
+    value: A minimal vocabulary that yml2vocab builds without error.
+
+class:
+  - id: Person
+    label: Person
+    comment: A human being.
+
+property:
+  - id: name
+    label: name
+    domain: Person
+    range: xsd:string
+    comment: The name of a Person.

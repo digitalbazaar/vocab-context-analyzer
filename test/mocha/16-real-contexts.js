@@ -22,8 +22,10 @@ const CONTEXTS = [
   'data-integrity-v2.context.jsonld',
   'did.context.jsonld',
   'ed25519-2020.context.jsonld',
+  'identification-vocab.context.jsonld',
   'odrl.context.jsonld',
-  'statuslist-2021.context.jsonld'
+  'statuslist-2021.context.jsonld',
+  'vital-records-vocab.context.jsonld'
 ];
 
 async function readJson(name) {
@@ -61,3 +63,33 @@ describe('shell: real-world contexts resolve cleanly', () => {
     });
   }
 });
+
+// yml2vocab/DB contexts inline term values as full absolute IRIs with no
+// trailing delimiter (e.g. "Event": "http://schema.org/Event"). These look
+// like namespace prefixes to a naive authority test, but they are terms and
+// must appear in the mappings — otherwise they silently vanish from every
+// context rule, producing both false positives (a real term reported
+// uncovered) and false negatives (terms excluded from analysis).
+describe('shell: full-IRI term values are captured, not dropped as prefixes',
+  () => {
+    it('captures a top-level class mapped to a full IRI ' +
+      '(identification-vocab)', async () => {
+      const {mappings} = await resolveContext(
+        await readJson('identification-vocab.context.jsonld'));
+      const term = mappings.find(
+        m => m.term === 'IdentificationDocumentCredential');
+      expect(term, 'IdentificationDocumentCredential mapping').to.exist;
+      expect(term.iri).to.equal(
+        'https://w3id.org/identification#IdentificationDocumentCredential');
+    });
+
+    it('captures schema.org class aliases mapped to full IRIs ' +
+      '(vital-records-vocab)', async () => {
+      const {mappings} = await resolveContext(
+        await readJson('vital-records-vocab.context.jsonld'));
+      const terms = mappings.map(m => m.term);
+      for(const expected of ['Event', 'Observation', 'PostalAddress']) {
+        expect(terms, `term ${expected}`).to.include(expected);
+      }
+    });
+  });
