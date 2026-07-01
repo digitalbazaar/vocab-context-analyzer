@@ -33,8 +33,10 @@ describe('shell: container and explicit-@id terms', () => {
         tags: {'@id': 'ex:tags', '@container': '@set'}
       }
     });
-    expect(mappings).to.deep.include(
-      {term: 'tags', iri: 'https://example.org/v#tags'});
+    const tags = mappings.find(m => m.term === 'tags');
+    expect(tags.iri).to.equal('https://example.org/v#tags');
+    // the mapping now also carries the @container for the collision rule
+    expect(tags.container).to.deep.equal(['@set']);
   });
 
   it('still resolves a plain CURIE term (no explicit @id)', async () => {

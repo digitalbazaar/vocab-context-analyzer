@@ -58,4 +58,57 @@ describe('rule: ctx/iri-collision', () => {
     };
     expect(iriCollision(model)).to.have.lengthOf(2);
   });
+
+  // terms that share an IRI but differ by @container are an intentional variant
+  // set, not a collision — the JSON-LD language-map / collection idiom, e.g.
+  // ActivityStreams `content` (bare) + `contentMap` (@container: @language). A
+  // group is a real collision only when every colliding term has the identical
+  // @container (absent counts as its own value).
+  it('does not flag a bare term and its @language-map variant', () => {
+    const model = {
+      vocab: {terms: []},
+      context: {mappings: [
+        {term: 'content', iri: 'https://www.w3.org/ns/activitystreams#content'},
+        {term: 'contentMap',
+          iri: 'https://www.w3.org/ns/activitystreams#content',
+          container: ['@language']}
+      ]}
+    };
+    expect(iriCollision(model)).to.deep.equal([]);
+  });
+
+  it('does not flag a bare term and its @list collection variant', () => {
+    const model = {
+      vocab: {terms: []},
+      context: {mappings: [
+        {term: 'items', iri: 'https://www.w3.org/ns/activitystreams#items'},
+        {term: 'orderedItems',
+          iri: 'https://www.w3.org/ns/activitystreams#items',
+          container: ['@list']}
+      ]}
+    };
+    expect(iriCollision(model)).to.deep.equal([]);
+  });
+
+  it('still flags terms that share an IRI with identical @container', () => {
+    const model = {
+      vocab: {terms: []},
+      context: {mappings: [
+        {term: 'name', iri: 'https://example.org/v#name'},
+        {term: 'fullName', iri: 'https://example.org/v#name'}
+      ]}
+    };
+    expect(iriCollision(model)).to.have.lengthOf(1);
+  });
+
+  it('flags a collision where both terms carry the same @container', () => {
+    const model = {
+      vocab: {terms: []},
+      context: {mappings: [
+        {term: 'aMap', iri: 'https://example.org/v#a', container: ['@language']},
+        {term: 'bMap', iri: 'https://example.org/v#a', container: ['@language']}
+      ]}
+    };
+    expect(iriCollision(model)).to.have.lengthOf(1);
+  });
 });

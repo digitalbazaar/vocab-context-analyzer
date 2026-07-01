@@ -69,6 +69,25 @@ describe('shell: resolveContext', () => {
     expect(name).to.not.have.property('coercion');
   });
 
+  // @container distinguishes intentional language-map / collection variants of
+  // a term from a genuine duplicate alias (ctx/iri-collision depends on it).
+  it('captures @container as an array on the mapping', async () => {
+    const ctx = {
+      ex: 'https://example.org/v#',
+      contentMap: {'@id': 'ex:content', '@container': '@language'}
+    };
+    const {mappings} = await resolveContext({'@context': ctx});
+    const contentMap = mappings.find(m => m.term === 'contentMap');
+    expect(contentMap.container).to.deep.equal(['@language']);
+  });
+
+  it('omits container for a term with no @container', async () => {
+    const ctx = {ex: 'https://example.org/v#', name: 'ex:name'};
+    const {mappings} = await resolveContext({'@context': ctx});
+    const name = mappings.find(m => m.term === 'name');
+    expect(name).to.not.have.property('container');
+  });
+
   it('does not emit a mapping for prefix entries themselves', async () => {
     const ctx = {ex: 'https://example.org/v#', name: 'ex:name'};
     const {mappings} = await resolveContext({'@context': ctx});
