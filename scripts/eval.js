@@ -47,13 +47,16 @@ async function main() {
   }
 
   const report = evaluate({cases, findingsByCase});
+  // stdout carries ONLY the JSON report, so `npm run eval > report.json` stays
+  // parseable (the design doc records the report for reproducibility). Human
+  // summaries go to stderr on both the pass and fail paths.
   console.log(JSON.stringify(report, null, 2));
 
   if(!report.hardGatePassed) {
     console.error('\neval gate FAILED: a hard gate was not satisfied.');
     process.exit(1);
   }
-  console.log(
+  console.error(
     `\neval gate passed: recall ${report.recall.caught}/` +
     `${report.recall.seeded}, ${cases.length} cases.`);
 }

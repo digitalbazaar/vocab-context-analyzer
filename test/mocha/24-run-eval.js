@@ -111,4 +111,55 @@ describe('eval: evaluate (eval-gate runner core)', () => {
       expect(report.faithfulness).to.have.property('faithful');
     });
   });
+
+  // checks must validate a finding against the model of the case that PRODUCED
+  // it, not a pool of all cases' terms. Otherwise a finding in case B citing a
+  // term that only exists in case A slips through. Dormant for deterministic
+  // runRules (a rule only cites its own case), but a real hole once Phase 2 LLM
+  // findings span the golden set.
+  describe('checks are per-case, not pooled across cases', () => {
+    // two cases whose models define disjoint terms
+    function caseWithTerm(name, localName) {
+      return {
+        name, expectedRuleIds: [],
+        model: {
+          vocab: {namespace: NS, terms: [{
+            id: localName, iri: `${NS}${localName}`, kind: 'property',
+            domain: [`${NS}Thing`], range: [`${NS}Thing`]
+          }]},
+          context: {mappings: []}
+        }
+      };
+    }
+
+    it('flags an LLM finding citing a term from a different case', () => {
+      const cases = [caseWithTerm('caseA', 'alpha'),
+        caseWithTerm('caseB', 'beta')];
+      // caseB's finding cites caseA's term — a cross-case hallucination
+      const findingsByCase = {
+        caseA: [],
+        caseB: [{id: 'llm/naming', severity: 'warning', source: 'llm',
+          artifact: 'vocabulary', term: `${NS}alpha`, message: 'x',
+          remediation: 'Rename to a noun.'}]
+      };
+      const report = evaluate({cases, findingsByCase});
+      expect(report.citation.valid).to.equal(false);
+      expect(report.hardGatePassed).to.equal(false);
+    });
+
+    it('passes when each finding cites a term from its own case', () => {
+      const cases = [caseWithTerm('caseA', 'alpha'),
+        caseWithTerm('caseB', 'beta')];
+      const findingsByCase = {
+        caseA: [{id: 'llm/naming', severity: 'warning', source: 'llm',
+          artifact: 'vocabulary', term: `${NS}alpha`, message: 'x',
+          remediation: 'Rename to a noun.'}],
+        caseB: [{id: 'llm/naming', severity: 'warning', source: 'llm',
+          artifact: 'vocabulary', term: `${NS}beta`, message: 'x',
+          remediation: 'Rename to a noun.'}]
+      };
+      const report = evaluate({cases, findingsByCase});
+      expect(report.citation.valid).to.equal(true);
+    });
+  });
 });
