@@ -1,12 +1,14 @@
 [
   {
     "name": "good",
+    "description": "A clean vocabulary and context that should produce no findings; the baseline that guards against false positives.",
     "vocab": "good.jsonld",
     "context": "good.context.jsonld",
     "expectedRuleIds": []
   },
   {
     "name": "broken-no-definition",
+    "description": "The \"knows\" term has neither an rdfs:label nor an rdfs:comment, so it is undefined. Expected: vocab/no-definition.",
     "vocab": "broken-no-definition.jsonld",
     "context": "broken-no-definition.context.jsonld",
     "expectedRuleIds": [
@@ -15,6 +17,7 @@
   },
   {
     "name": "broken-uncovered",
+    "description": "The vocabulary defines \"knows\" but the context does not map it, so a consumer cannot use it. Expected: pair/coverage.",
     "vocab": "broken-uncovered.jsonld",
     "context": "broken-uncovered.context.jsonld",
     "expectedRuleIds": [
@@ -23,6 +26,7 @@
   },
   {
     "name": "broken-orphan",
+    "description": "The context maps \"ghost\" into the vocabulary namespace, but no vocabulary term defines it. Expected: pair/orphan.",
     "vocab": "broken-orphan.jsonld",
     "context": "broken-orphan.context.jsonld",
     "expectedRuleIds": [
@@ -31,6 +35,7 @@
   },
   {
     "name": "broken-collision",
+    "description": "Two distinct context terms (\"name\" and \"fullName\") map to the same IRI, an ambiguous alias. Expected: ctx/iri-collision.",
     "vocab": "broken-collision.jsonld",
     "context": "broken-collision.context.jsonld",
     "expectedRuleIds": [
@@ -39,6 +44,7 @@
   },
   {
     "name": "broken-unresolved",
+    "description": "A context term maps to a value that is neither an absolute IRI nor a resolvable CURIE. Expected: ctx/iri-unresolved.",
     "vocab": "broken-unresolved.jsonld",
     "context": "broken-unresolved.context.jsonld",
     "expectedRuleIds": [
@@ -47,6 +53,7 @@
   },
   {
     "name": "broken-unprotected",
+    "description": "The context is not @protected, so a later context can silently redefine its terms. Expected: ctx/unprotected.",
     "vocab": "broken-unprotected.jsonld",
     "context": "broken-unprotected.context.jsonld",
     "expectedRuleIds": [
@@ -55,6 +62,7 @@
   },
   {
     "name": "broken-unsafe-vocab",
+    "description": "The top-level @vocab is not an absolute IRI, so term expansion depends on the document base. Expected: ctx/unsafe-vocab.",
     "vocab": "broken-unsafe-vocab.jsonld",
     "context": "broken-unsafe-vocab.context.jsonld",
     "expectedRuleIds": [
@@ -63,6 +71,7 @@
   },
   {
     "name": "broken-hierarchy",
+    "description": "A term's rdfs:subClassOf points at an in-namespace IRI that no term defines, a dangling reference. Expected: vocab/broken-hierarchy.",
     "vocab": "broken-hierarchy.jsonld",
     "context": "broken-hierarchy.context.jsonld",
     "expectedRuleIds": [
@@ -71,6 +80,7 @@
   },
   {
     "name": "broken-deprecated-mapped",
+    "description": "A term is marked owl:deprecated in the vocabulary yet is still mapped in the context. Expected: vocab/deprecated-mapped.",
     "vocab": "broken-deprecated-mapped.jsonld",
     "context": "broken-deprecated-mapped.context.jsonld",
     "expectedRuleIds": [
@@ -79,6 +89,7 @@
   },
   {
     "name": "broken-missing-domain-range",
+    "description": "A property declares neither rdfs:domain nor rdfs:range, so its subject/object types are unspecified. Expected: vocab/missing-domain-range.",
     "vocab": "broken-missing-domain-range.jsonld",
     "context": "broken-missing-domain-range.context.jsonld",
     "expectedRuleIds": [
@@ -87,6 +98,7 @@
   },
   {
     "name": "broken-missing-coercion",
+    "description": "A property has an xsd:date range but its context mapping omits the matching @type coercion, so values are untyped strings. Expected: ctx/missing-coercion.",
     "vocab": "broken-missing-coercion.jsonld",
     "context": "broken-missing-coercion.context.jsonld",
     "expectedRuleIds": [
@@ -95,6 +107,7 @@
   },
   {
     "name": "broken-unstable-iri",
+    "description": "A term IRI embeds a version segment (/v1/), tying the term identity to a version. Expected: vocab/unstable-iri.",
     "vocab": "broken-unstable-iri.jsonld",
     "context": "broken-unstable-iri.context.jsonld",
     "expectedRuleIds": [
