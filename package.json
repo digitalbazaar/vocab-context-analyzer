@@ -16,6 +16,7 @@
   ],
   "scripts": {
     "build:fixtures": "node scripts/build-fixtures.js",
+    "eval": "node scripts/eval.js",
     "lint": "eslint .",
     "test": "mocha test/mocha --recursive"
   },

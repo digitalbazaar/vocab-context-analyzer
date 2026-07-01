@@ -106,13 +106,19 @@
       ],
       "rdfs:domain": "ex:Person",
       "rdfs:range": "ex:Person",
+      "rdfs:label": "knows",
+      "rdfs:comment": {
+        "@value": "<div>A Person this Person knows.</div>",
+        "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+      },
       "vs:term_status": "stable",
       "mentioned": [
         {
           "@id": "https://example.org/v.context.jsonld",
           "@type": "jsonld:Context"
         }
-      ]
+      ],
+      "owl:deprecated": true
     }
   ],
   "rdfs_classes": [

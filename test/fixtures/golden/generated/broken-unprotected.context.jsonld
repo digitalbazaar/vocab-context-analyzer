@@ -1,0 +1,17 @@
+{
+  "@context": {
+    "Person": {
+      "@id": "https://example.org/v#Person",
+      "@context": {
+        "name": {
+          "@id": "https://example.org/v#name",
+          "@type": "http://www.w3.org/2001/XMLSchema#string"
+        },
+        "knows": {
+          "@id": "https://example.org/v#knows",
+          "@type": "@id"
+        }
+      }
+    }
+  }
+}

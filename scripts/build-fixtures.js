@@ -38,11 +38,15 @@ const CASES = [
   {
     name: 'good',
     src: 'good.yml',
+    description: 'A clean vocabulary and context that should produce no ' +
+      'findings; the baseline that guards against false positives.',
     expectedRuleIds: []
   },
   {
     name: 'broken-no-definition',
     src: 'good.yml',
+    description: 'The "knows" term has neither an rdfs:label nor an ' +
+      'rdfs:comment, so it is undefined. Expected: vocab/no-definition.',
     // yml2vocab always synthesizes an rdfs:label (it defaults to the term id),
     // so a term with neither label nor comment cannot be produced from YAML.
     // Strip both from one term's node in the generated vocab.
@@ -55,6 +59,8 @@ const CASES = [
   {
     name: 'broken-uncovered',
     src: 'good.yml',
+    description: 'The vocabulary defines "knows" but the context does not ' +
+      'map it, so a consumer cannot use it. Expected: pair/coverage.',
     // remove a term from the context so a vocab term is no longer covered
     mutate({vocab, context}) {
       _deleteContextTerm(context, 'knows');
@@ -65,6 +71,8 @@ const CASES = [
   {
     name: 'broken-orphan',
     src: 'good.yml',
+    description: 'The context maps "ghost" into the vocabulary namespace, ' +
+      'but no vocabulary term defines it. Expected: pair/orphan.',
     // add a context mapping into the vocab namespace with no vocab term
     mutate({vocab, context}) {
       _addContextTerm(context, 'ghost', `${NS}ghost`);
@@ -75,6 +83,8 @@ const CASES = [
   {
     name: 'broken-collision',
     src: 'good.yml',
+    description: 'Two distinct context terms ("name" and "fullName") map to ' +
+      'the same IRI, an ambiguous alias. Expected: ctx/iri-collision.',
     // point two distinct context terms at the same IRI
     mutate({vocab, context}) {
       _addContextTerm(context, 'fullName', `${NS}name`);
@@ -85,12 +95,105 @@ const CASES = [
   {
     name: 'broken-unresolved',
     src: 'good.yml',
+    description: 'A context term maps to a value that is neither an absolute ' +
+      'IRI nor a resolvable CURIE. Expected: ctx/iri-unresolved.',
     // give a context term a relative IRI that cannot resolve
     mutate({vocab, context}) {
       _addContextTerm(context, 'broken', 'notaprefix:butnoscheme that breaks');
       return {vocab, context};
     },
     expectedRuleIds: ['ctx/iri-unresolved']
+  },
+  {
+    name: 'broken-unprotected',
+    src: 'good.yml',
+    description: 'The context is not @protected, so a later context can ' +
+      'silently redefine its terms. Expected: ctx/unprotected.',
+    // strip @protected everywhere so terms can be silently redefined
+    mutate({vocab, context}) {
+      _walkScopes(context['@context'], scope => delete scope['@protected']);
+      return {vocab, context};
+    },
+    expectedRuleIds: ['ctx/unprotected']
+  },
+  {
+    name: 'broken-unsafe-vocab',
+    src: 'good.yml',
+    description: 'The top-level @vocab is not an absolute IRI, so term ' +
+      'expansion depends on the document base. Expected: ctx/unsafe-vocab.',
+    // set a top-level @vocab that is not an absolute IRI
+    mutate({vocab, context}) {
+      context['@context']['@vocab'] = 'not-an-absolute-iri';
+      return {vocab, context};
+    },
+    expectedRuleIds: ['ctx/unsafe-vocab']
+  },
+  {
+    name: 'broken-hierarchy',
+    src: 'good.yml',
+    description: 'A term\'s rdfs:subClassOf points at an in-namespace IRI ' +
+      'that no term defines, a dangling reference. ' +
+      'Expected: vocab/broken-hierarchy.',
+    // point a term's rdfs:subClassOf at an undefined term in-namespace
+    mutate({vocab, context}) {
+      _setNodeField(vocab, 'Person', 'rdfs:subClassOf', 'ex:Missing');
+      return {vocab, context};
+    },
+    expectedRuleIds: ['vocab/broken-hierarchy']
+  },
+  {
+    name: 'broken-deprecated-mapped',
+    src: 'good.yml',
+    description: 'A term is marked owl:deprecated in the vocabulary yet is ' +
+      'still mapped in the context. Expected: vocab/deprecated-mapped.',
+    // mark a term deprecated while it remains mapped in the context
+    mutate({vocab, context}) {
+      _setNodeField(vocab, 'knows', 'owl:deprecated', true);
+      return {vocab, context};
+    },
+    expectedRuleIds: ['vocab/deprecated-mapped']
+  },
+  {
+    name: 'broken-missing-domain-range',
+    src: 'good.yml',
+    description: 'A property declares neither rdfs:domain nor rdfs:range, so ' +
+      'its subject/object types are unspecified. ' +
+      'Expected: vocab/missing-domain-range.',
+    // remove both rdfs:domain and rdfs:range from a property
+    mutate({vocab, context}) {
+      _deleteNodeField(vocab, 'name', 'rdfs:domain');
+      _deleteNodeField(vocab, 'name', 'rdfs:range');
+      return {vocab, context};
+    },
+    expectedRuleIds: ['vocab/missing-domain-range']
+  },
+  {
+    name: 'broken-missing-coercion',
+    src: 'good.yml',
+    description: 'A property has an xsd:date range but its context mapping ' +
+      'omits the matching @type coercion, so values are untyped strings. ' +
+      'Expected: ctx/missing-coercion.',
+    // a property with an xsd:date range whose context mapping omits the
+    // matching @type coercion
+    mutate({vocab, context}) {
+      _setNodeField(vocab, 'name', 'rdfs:range', 'xsd:date');
+      _setContextCoercion(context, 'name', undefined);
+      return {vocab, context};
+    },
+    expectedRuleIds: ['ctx/missing-coercion']
+  },
+  {
+    name: 'broken-unstable-iri',
+    src: 'good.yml',
+    description: 'A term IRI embeds a version segment (/v1/), tying the term ' +
+      'identity to a version. Expected: vocab/unstable-iri.',
+    // give a term an IRI that embeds a version segment
+    mutate({vocab, context}) {
+      _addVocabTerm(vocab, 'https://example.org/v/v1/Widget');
+      _addContextTerm(context, 'Widget', 'https://example.org/v/v1/Widget');
+      return {vocab, context};
+    },
+    expectedRuleIds: ['vocab/unstable-iri']
   }
 ];
 
@@ -110,6 +213,7 @@ async function main() {
     await writeFile(`${base}.context.jsonld`, JSON.stringify(context, null, 2));
     manifest.push({
       name: testCase.name,
+      description: testCase.description,
       vocab: `${testCase.name}.jsonld`,
       context: `${testCase.name}.context.jsonld`,
       expectedRuleIds: testCase.expectedRuleIds
@@ -142,7 +246,21 @@ async function _generate(srcYaml) {
   const context = JSON.parse(
     await readFile(join(work, 'vocabulary.context.jsonld'), 'utf8'));
   await rm(work, {recursive: true, force: true});
+  _pinDate(vocab);
   return {vocab, context};
+}
+
+// yml2vocab stamps `dc:date` with the generation date, which would make every
+// regeneration churn the fixtures and defeat the fixtures-drift CI check.
+// Overwrite it with a fixed date so generation is deterministic; the date is
+// not meaningful for these synthetic fixtures and no rule reads it.
+const PINNED_DATE = '1970-01-01';
+function _pinDate(vocab) {
+  _walkNodes(vocab, node => {
+    if(typeof node['dc:date'] === 'string') {
+      node['dc:date'] = PINNED_DATE;
+    }
+  });
 }
 
 // --- mutation helpers: operate on the generated context, which uses nested
@@ -151,6 +269,66 @@ async function _generate(srcYaml) {
 function _addContextTerm(context, term, iri) {
   const scope = _firstScope(context['@context']);
   scope[term] = {'@id': iri};
+}
+
+// set or overwrite an rdfs:* / owl:* field on the vocab term node whose @id
+// ends in the given local name.
+function _setNodeField(vocab, localName, field, value) {
+  const node = _findNode(vocab, localName);
+  node[field] = value;
+}
+
+// remove a field from the vocab term node whose @id ends in the given local
+// name; throws if the field is absent so a stale mutation is caught.
+function _deleteNodeField(vocab, localName, field) {
+  const node = _findNode(vocab, localName);
+  if(!(field in node)) {
+    throw new Error(
+      `_deleteNodeField: "${field}" not found on "${localName}"`);
+  }
+  delete node[field];
+}
+
+function _findNode(vocab, localName) {
+  let found;
+  _walkNodes(vocab, node => {
+    if(_hasLocalName(node['@id'], localName)) {
+      found = node;
+    }
+  });
+  if(found === undefined) {
+    throw new Error(`_findNode: no term node for "${localName}"`);
+  }
+  return found;
+}
+
+// append a minimal class term node (with an absolute @id) into the vocab's
+// class list, so a term with an arbitrary IRI can be introduced.
+function _addVocabTerm(vocab, iri) {
+  const label = iri.split(/[#/]/).pop();
+  const node = {'@id': iri, '@type': 'rdfs:Class', 'rdfs:label': label};
+  if(Array.isArray(vocab.rdfs_classes)) {
+    vocab.rdfs_classes.push(node);
+  } else if(vocab.rdfs_classes !== undefined) {
+    vocab.rdfs_classes = [vocab.rdfs_classes, node];
+  } else {
+    vocab.rdfs_classes = node;
+  }
+}
+
+// drop the @type coercion from a term's context mapping, leaving a bare @id
+// mapping (value undefined removes the coercion entirely).
+function _setContextCoercion(context, term, coercion) {
+  _walkScopes(context['@context'], scope => {
+    const def = scope[term];
+    if(def !== null && typeof def === 'object' && '@id' in def) {
+      if(coercion === undefined) {
+        delete def['@type'];
+      } else {
+        def['@type'] = coercion;
+      }
+    }
+  });
 }
 
 function _deleteContextTerm(context, term) {
