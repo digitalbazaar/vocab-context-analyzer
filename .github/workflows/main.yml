@@ -39,5 +39,9 @@ jobs:
         with:
           node-version: 22.x
       - run: npm install
+      - name: Check golden fixtures are up to date with the generator
+        run: |
+          npm run build:fixtures
+          git diff --exit-code test/fixtures/golden/generated/
       - name: Run eval gate
         run: npm run eval

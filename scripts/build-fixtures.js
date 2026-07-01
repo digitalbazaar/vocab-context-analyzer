@@ -216,7 +216,21 @@ async function _generate(srcYaml) {
   const context = JSON.parse(
     await readFile(join(work, 'vocabulary.context.jsonld'), 'utf8'));
   await rm(work, {recursive: true, force: true});
+  _pinDate(vocab);
   return {vocab, context};
+}
+
+// yml2vocab stamps `dc:date` with the generation date, which would make every
+// regeneration churn the fixtures and defeat the fixtures-drift CI check.
+// Overwrite it with a fixed date so generation is deterministic; the date is
+// not meaningful for these synthetic fixtures and no rule reads it.
+const PINNED_DATE = '1970-01-01';
+function _pinDate(vocab) {
+  _walkNodes(vocab, node => {
+    if(typeof node['dc:date'] === 'string') {
+      node['dc:date'] = PINNED_DATE;
+    }
+  });
 }
 
 // --- mutation helpers: operate on the generated context, which uses nested

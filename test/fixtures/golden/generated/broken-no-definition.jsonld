@@ -75,7 +75,7 @@
     "@value": "A clean vocabulary used as the golden-set baseline.",
     "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
   },
-  "dc:date": "2026-06-05",
+  "dc:date": "1970-01-01",
   "rdfs_properties": [
     {
       "@id": "ex:name",
