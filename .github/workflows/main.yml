@@ -30,3 +30,14 @@ jobs:
       - run: npm install
       - name: Run tests
         run: npm test
+  eval:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Use Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22.x
+      - run: npm install
+      - name: Run eval gate
+        run: npm run eval

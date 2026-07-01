@@ -91,6 +91,80 @@ const CASES = [
       return {vocab, context};
     },
     expectedRuleIds: ['ctx/iri-unresolved']
+  },
+  {
+    name: 'broken-unprotected',
+    src: 'good.yml',
+    // strip @protected everywhere so terms can be silently redefined
+    mutate({vocab, context}) {
+      _walkScopes(context['@context'], scope => delete scope['@protected']);
+      return {vocab, context};
+    },
+    expectedRuleIds: ['ctx/unprotected']
+  },
+  {
+    name: 'broken-unsafe-vocab',
+    src: 'good.yml',
+    // set a top-level @vocab that is not an absolute IRI
+    mutate({vocab, context}) {
+      context['@context']['@vocab'] = 'not-an-absolute-iri';
+      return {vocab, context};
+    },
+    expectedRuleIds: ['ctx/unsafe-vocab']
+  },
+  {
+    name: 'broken-hierarchy',
+    src: 'good.yml',
+    // point a term's rdfs:subClassOf at an undefined term in-namespace
+    mutate({vocab, context}) {
+      _setNodeField(vocab, 'Person', 'rdfs:subClassOf', 'ex:Missing');
+      return {vocab, context};
+    },
+    expectedRuleIds: ['vocab/broken-hierarchy']
+  },
+  {
+    name: 'broken-deprecated-mapped',
+    src: 'good.yml',
+    // mark a term deprecated while it remains mapped in the context
+    mutate({vocab, context}) {
+      _setNodeField(vocab, 'knows', 'owl:deprecated', true);
+      return {vocab, context};
+    },
+    expectedRuleIds: ['vocab/deprecated-mapped']
+  },
+  {
+    name: 'broken-missing-domain-range',
+    src: 'good.yml',
+    // remove both rdfs:domain and rdfs:range from a property
+    mutate({vocab, context}) {
+      _deleteNodeField(vocab, 'name', 'rdfs:domain');
+      _deleteNodeField(vocab, 'name', 'rdfs:range');
+      return {vocab, context};
+    },
+    expectedRuleIds: ['vocab/missing-domain-range']
+  },
+  {
+    name: 'broken-missing-coercion',
+    src: 'good.yml',
+    // a property with an xsd:date range whose context mapping omits the
+    // matching @type coercion
+    mutate({vocab, context}) {
+      _setNodeField(vocab, 'name', 'rdfs:range', 'xsd:date');
+      _setContextCoercion(context, 'name', undefined);
+      return {vocab, context};
+    },
+    expectedRuleIds: ['ctx/missing-coercion']
+  },
+  {
+    name: 'broken-unstable-iri',
+    src: 'good.yml',
+    // give a term an IRI that embeds a version segment
+    mutate({vocab, context}) {
+      _addVocabTerm(vocab, 'https://example.org/v/v1/Widget');
+      _addContextTerm(context, 'Widget', 'https://example.org/v/v1/Widget');
+      return {vocab, context};
+    },
+    expectedRuleIds: ['vocab/unstable-iri']
   }
 ];
 
@@ -151,6 +225,66 @@ async function _generate(srcYaml) {
 function _addContextTerm(context, term, iri) {
   const scope = _firstScope(context['@context']);
   scope[term] = {'@id': iri};
+}
+
+// set or overwrite an rdfs:* / owl:* field on the vocab term node whose @id
+// ends in the given local name.
+function _setNodeField(vocab, localName, field, value) {
+  const node = _findNode(vocab, localName);
+  node[field] = value;
+}
+
+// remove a field from the vocab term node whose @id ends in the given local
+// name; throws if the field is absent so a stale mutation is caught.
+function _deleteNodeField(vocab, localName, field) {
+  const node = _findNode(vocab, localName);
+  if(!(field in node)) {
+    throw new Error(
+      `_deleteNodeField: "${field}" not found on "${localName}"`);
+  }
+  delete node[field];
+}
+
+function _findNode(vocab, localName) {
+  let found;
+  _walkNodes(vocab, node => {
+    if(_hasLocalName(node['@id'], localName)) {
+      found = node;
+    }
+  });
+  if(found === undefined) {
+    throw new Error(`_findNode: no term node for "${localName}"`);
+  }
+  return found;
+}
+
+// append a minimal class term node (with an absolute @id) into the vocab's
+// class list, so a term with an arbitrary IRI can be introduced.
+function _addVocabTerm(vocab, iri) {
+  const label = iri.split(/[#/]/).pop();
+  const node = {'@id': iri, '@type': 'rdfs:Class', 'rdfs:label': label};
+  if(Array.isArray(vocab.rdfs_classes)) {
+    vocab.rdfs_classes.push(node);
+  } else if(vocab.rdfs_classes !== undefined) {
+    vocab.rdfs_classes = [vocab.rdfs_classes, node];
+  } else {
+    vocab.rdfs_classes = node;
+  }
+}
+
+// drop the @type coercion from a term's context mapping, leaving a bare @id
+// mapping (value undefined removes the coercion entirely).
+function _setContextCoercion(context, term, coercion) {
+  _walkScopes(context['@context'], scope => {
+    const def = scope[term];
+    if(def !== null && typeof def === 'object' && '@id' in def) {
+      if(coercion === undefined) {
+        delete def['@type'];
+      } else {
+        def['@type'] = coercion;
+      }
+    }
+  });
 }
 
 function _deleteContextTerm(context, term) {

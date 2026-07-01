@@ -44,5 +44,61 @@
     "expectedRuleIds": [
       "ctx/iri-unresolved"
     ]
+  },
+  {
+    "name": "broken-unprotected",
+    "vocab": "broken-unprotected.jsonld",
+    "context": "broken-unprotected.context.jsonld",
+    "expectedRuleIds": [
+      "ctx/unprotected"
+    ]
+  },
+  {
+    "name": "broken-unsafe-vocab",
+    "vocab": "broken-unsafe-vocab.jsonld",
+    "context": "broken-unsafe-vocab.context.jsonld",
+    "expectedRuleIds": [
+      "ctx/unsafe-vocab"
+    ]
+  },
+  {
+    "name": "broken-hierarchy",
+    "vocab": "broken-hierarchy.jsonld",
+    "context": "broken-hierarchy.context.jsonld",
+    "expectedRuleIds": [
+      "vocab/broken-hierarchy"
+    ]
+  },
+  {
+    "name": "broken-deprecated-mapped",
+    "vocab": "broken-deprecated-mapped.jsonld",
+    "context": "broken-deprecated-mapped.context.jsonld",
+    "expectedRuleIds": [
+      "vocab/deprecated-mapped"
+    ]
+  },
+  {
+    "name": "broken-missing-domain-range",
+    "vocab": "broken-missing-domain-range.jsonld",
+    "context": "broken-missing-domain-range.context.jsonld",
+    "expectedRuleIds": [
+      "vocab/missing-domain-range"
+    ]
+  },
+  {
+    "name": "broken-missing-coercion",
+    "vocab": "broken-missing-coercion.jsonld",
+    "context": "broken-missing-coercion.context.jsonld",
+    "expectedRuleIds": [
+      "ctx/missing-coercion"
+    ]
+  },
+  {
+    "name": "broken-unstable-iri",
+    "vocab": "broken-unstable-iri.jsonld",
+    "context": "broken-unstable-iri.context.jsonld",
+    "expectedRuleIds": [
+      "vocab/unstable-iri"
+    ]
   }
 ]
