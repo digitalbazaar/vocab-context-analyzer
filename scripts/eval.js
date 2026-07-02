@@ -49,6 +49,12 @@ async function main() {
 
   const findingsByCase = {};
   for(const c of cases) {
+    // findingsByCase is keyed by case name; a duplicate name (e.g. an anchor
+    // colliding with a golden case) would silently overwrite one case's
+    // findings and mis-score it. Fail loudly instead.
+    if(c.name in findingsByCase) {
+      throw new Error(`Duplicate eval case name: "${c.name}".`);
+    }
     findingsByCase[c.name] = runRules(c.model);
   }
 

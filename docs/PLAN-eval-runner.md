@@ -52,3 +52,31 @@ Add an `eval` job, sibling to `lint`/`test` (no `needs:`), Node 22.x, `permissio
    stub.
 3. **`scripts/` convention** — match `scripts/build-fixtures.js`: use
    **`scripts/eval.js`** (plain `.js`).
+
+## Known limitations / follow-ups (deferred from PR #10)
+
+The known-good real-context anchors (PR #10) shipped with three accepted
+trade-offs, surfaced in review. None block the gate; each is a future PR.
+
+1. **Anchors are a parallel manifest + loader, outside the schema.**
+   `test/fixtures/golden/anchors.json` + `scripts/loadAnchors.js` duplicate the
+   golden-set case shape but sit outside `lib/eval/manifestSchema.js`
+   (`validateManifestEntry` requires `vocab`, so it rejects a context-only
+   anchor). The two manifests can drift. **Right-altitude fix:** one manifest
+   with `vocab` optional (defaulting to `{}`) and `manifestSchema` relaxed to
+   allow context-only entries, so a single loader + schema covers both golden
+   cases and anchors. This also unblocks a future third category (real contexts
+   paired with a real vocabulary as seeded-defect cases), which today fits
+   neither the generated dir nor the context-only anchors file.
+
+2. **The manifest→case build loop is duplicated three ways.**
+   `scripts/loadAnchors.js`, `scripts/eval.js`, and `test/mocha/13-golden-set.js`
+   each build `{name, model, expectedRuleIds ?? []}` from a manifest entry.
+   Extract a shared `loadCasesFromManifest(dir, entries, {vocabOptional})`
+   helper (plus a path-taking `readJson`) so case shape changes land in one
+   place. Folds naturally into follow-up 1.
+
+3. **`scripts/loadAnchors.js` breaks the `scripts/` kebab-case convention.**
+   Resolved decision 3 above pins `scripts/` files to kebab-case
+   (`build-fixtures.js`, `eval.js`); `loadAnchors.js` is camelCase. Rename to
+   `scripts/load-anchors.js` (it merges away entirely under follow-up 1).
