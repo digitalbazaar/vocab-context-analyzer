@@ -34,13 +34,29 @@ describe('eval: manifest schema', () => {
     expect(validateManifestEntry(entry)).to.equal(entry);
   });
 
-  it('requires name, vocab, context as non-empty strings', () => {
+  it('requires name and context as non-empty strings', () => {
     expect(() => validateManifestEntry(phase1Entry({name: ''})))
       .to.throw(/name/);
-    expect(() => validateManifestEntry(phase1Entry({vocab: 42})))
-      .to.throw(/vocab/);
     expect(() => validateManifestEntry(phase1Entry({context: undefined})))
       .to.throw(/context/);
+  });
+
+  it('allows a context-only entry (no vocab) but rejects a non-string vocab',
+    () => {
+      // a context-only anchor omits vocab; the loader builds the model from
+      // the context alone
+      const contextOnly = phase1Entry();
+      delete contextOnly.vocab;
+      expect(() => validateManifestEntry(contextOnly)).to.not.throw();
+      expect(() => validateManifestEntry(phase1Entry({vocab: 42})))
+        .to.throw(/vocab/);
+    });
+
+  it('accepts exact as a boolean and rejects a non-boolean', () => {
+    expect(() => validateManifestEntry(phase1Entry({exact: true})))
+      .to.not.throw();
+    expect(() => validateManifestEntry(phase1Entry({exact: 'yes'})))
+      .to.throw(/exact/);
   });
 
   it('requires expectedRuleIds to be an array of strings', () => {

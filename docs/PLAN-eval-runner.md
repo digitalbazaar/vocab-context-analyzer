@@ -55,8 +55,11 @@ Add an `eval` job, sibling to `lint`/`test` (no `needs:`), Node 22.x, `permissio
 
 ## Known limitations / follow-ups (deferred from PR #10)
 
-The known-good real-context anchors (PR #10) shipped with three accepted
-trade-offs, surfaced in review. None block the gate; each is a future PR.
+**Resolved:** all three follow-ups below were addressed by the loader-unification
+work — one shared `lib/eval/loadCases.js` now loads both the generated golden
+set and the anchors, validates every entry against `manifestSchema.js` (with
+`vocab` now optional and `exact` allowed), and `scripts/loadAnchors.js` is gone.
+Kept as a record of the original trade-offs.
 
 1. **Anchors are a parallel manifest + loader, outside the schema.**
    `test/fixtures/golden/anchors.json` + `scripts/loadAnchors.js` duplicate the

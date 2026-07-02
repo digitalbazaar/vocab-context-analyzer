@@ -5,6 +5,7 @@ import {dirname, join} from 'node:path';
 import {evaluate} from '../../lib/eval/runEval.js';
 import {expect} from 'chai';
 import {fileURLToPath} from 'node:url';
+import {loadCases} from '../../lib/eval/loadCases.js';
 import {loadModel} from '../../lib/shell/loadModel.js';
 import {readFile as readFileAsync} from 'node:fs/promises';
 import {readFileSync} from 'node:fs';
@@ -66,14 +67,10 @@ describe('golden set (SPEC section 7 eval gate)', () => {
   // rather than an inline loop, so this test exercises the same evaluate() the
   // CI eval job runs.
   it('achieves recall 1.0 across all seeded defects', async () => {
-    const cases = [];
+    const cases = await loadCases({entries: manifest, readJson});
     const findingsByCase = {};
-    for(const c of manifest) {
-      const model = await loadModel({
-        vocab: await readJson(c.vocab), context: await readJson(c.context)
-      });
-      cases.push({name: c.name, model, expectedRuleIds: c.expectedRuleIds});
-      findingsByCase[c.name] = runRules(model);
+    for(const c of cases) {
+      findingsByCase[c.name] = runRules(c.model);
     }
     const report = evaluate({cases, findingsByCase});
     expect(report.recall.rate,
