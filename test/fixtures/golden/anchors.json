@@ -1,0 +1,44 @@
+[
+  {
+    "name": "anchor-citizenship-v1",
+    "description": "Published W3C citizenship context; a known-good anchor that must stay finding-free.",
+    "context": "real/citizenship-v1.context.jsonld",
+    "expectedRuleIds": []
+  },
+  {
+    "name": "anchor-credentials-v2",
+    "description": "Published W3C VC 2.0 context; a known-good anchor that must stay finding-free.",
+    "context": "real/credentials-v2.context.jsonld",
+    "expectedRuleIds": []
+  },
+  {
+    "name": "anchor-data-integrity-v2",
+    "description": "Published W3C Data Integrity context; a known-good anchor that must stay finding-free.",
+    "context": "real/data-integrity-v2.context.jsonld",
+    "expectedRuleIds": []
+  },
+  {
+    "name": "anchor-ed25519-2020",
+    "description": "Published Ed25519Signature2020 context; a known-good anchor that must stay finding-free.",
+    "context": "real/ed25519-2020.context.jsonld",
+    "expectedRuleIds": []
+  },
+  {
+    "name": "anchor-identification-vocab",
+    "description": "Published Digital Bazaar identification context; a known-good anchor that must stay finding-free.",
+    "context": "real/identification-vocab.context.jsonld",
+    "expectedRuleIds": []
+  },
+  {
+    "name": "anchor-statuslist-2021",
+    "description": "Published StatusList 2021 context; a known-good anchor that must stay finding-free.",
+    "context": "real/statuslist-2021.context.jsonld",
+    "expectedRuleIds": []
+  },
+  {
+    "name": "anchor-vital-records-vocab",
+    "description": "Published Digital Bazaar vital-records context; a known-good anchor that must stay finding-free.",
+    "context": "real/vital-records-vocab.context.jsonld",
+    "expectedRuleIds": []
+  }
+]

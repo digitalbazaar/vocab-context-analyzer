@@ -4,6 +4,7 @@
 import {dirname, join} from 'node:path';
 import {evaluate} from '../lib/eval/runEval.js';
 import {fileURLToPath} from 'node:url';
+import {loadAnchorCases} from './loadAnchors.js';
 import {loadModel} from '../lib/shell/loadModel.js';
 import {readFile} from 'node:fs/promises';
 import {runRules} from '../lib/runRules.js';
@@ -23,8 +24,8 @@ import {runRules} from '../lib/runRules.js';
  */
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const GENERATED = join(
-  HERE, '..', 'test', 'fixtures', 'golden', 'generated');
+const FIXTURES = join(HERE, '..', 'test', 'fixtures');
+const GENERATED = join(FIXTURES, 'golden', 'generated');
 
 async function readJson(name) {
   return JSON.parse(await readFile(join(GENERATED, name), 'utf8'));
@@ -34,7 +35,6 @@ async function main() {
   const manifest = await readJson('manifest.json');
 
   const cases = [];
-  const findingsByCase = {};
   for(const entry of manifest) {
     const model = await loadModel({
       vocab: await readJson(entry.vocab),
@@ -43,7 +43,13 @@ async function main() {
     cases.push({
       name: entry.name, model, expectedRuleIds: entry.expectedRuleIds ?? []
     });
-    findingsByCase[entry.name] = runRules(model);
+  }
+  // known-good anchors: real published contexts that must stay finding-free
+  cases.push(...await loadAnchorCases(FIXTURES));
+
+  const findingsByCase = {};
+  for(const c of cases) {
+    findingsByCase[c.name] = runRules(c.model);
   }
 
   const report = evaluate({cases, findingsByCase});
