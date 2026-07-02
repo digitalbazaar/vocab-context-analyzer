@@ -136,6 +136,56 @@ describe('eval: evaluate (eval-gate runner core)', () => {
     });
   });
 
+  describe('exact regression anchors must match their finding set', () => {
+    // a regression anchor (exact: true) pins a real published context to its
+    // confirmed-real finding set: not fewer (a rule went silent) and not more
+    // (a new false positive).
+    function det(id) {
+      return {id, severity: 'warning', source: 'deterministic',
+        artifact: 'context', message: 'x'};
+    }
+    const anchor = {name: 'regression-x', model: model(), exact: true,
+      expectedRuleIds: ['ctx/unprotected', 'ctx/unsafe-vocab']};
+
+    it('passes when produced ids equal expected exactly', () => {
+      const report = evaluate({cases: [anchor], findingsByCase: {
+        'regression-x': [det('ctx/unprotected'), det('ctx/unsafe-vocab')]
+      }});
+      expect(report.exactness.exact).to.equal(true);
+      expect(report.hardGatePassed).to.equal(true);
+    });
+
+    it('fails on an unexpected extra finding (new false positive)', () => {
+      const report = evaluate({cases: [anchor], findingsByCase: {
+        'regression-x': [det('ctx/unprotected'), det('ctx/unsafe-vocab'),
+          det('ctx/iri-collision')]
+      }});
+      expect(report.exactness.exact).to.equal(false);
+      expect(report.exactness.exactViolations[0].unexpected)
+        .to.include('ctx/iri-collision');
+      expect(report.hardGatePassed).to.equal(false);
+    });
+
+    it('fails on a missing expected finding (a rule went silent)', () => {
+      const report = evaluate({cases: [anchor], findingsByCase: {
+        'regression-x': [det('ctx/unprotected')]
+      }});
+      expect(report.exactness.exact).to.equal(false);
+      expect(report.exactness.exactViolations[0].missing)
+        .to.include('ctx/unsafe-vocab');
+      expect(report.hardGatePassed).to.equal(false);
+    });
+
+    it('does not apply exact-match to non-exact cases', () => {
+      // a normal seeded-defect case may produce extra findings without failing
+      const cases = [evalCase()];
+      const findingsByCase = {'broken-orphan': [det('pair/orphan'),
+        det('ctx/invalid-jsonld')]};
+      const report = evaluate({cases, findingsByCase});
+      expect(report.exactness.exact).to.equal(true);
+    });
+  });
+
   describe('the three checks are computed and reported', () => {
     it('reports citation, deferral, and faithfulness verdicts', () => {
       const cases = [evalCase({expectedRuleIds: []})];

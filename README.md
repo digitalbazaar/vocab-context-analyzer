@@ -50,8 +50,9 @@ Implemented:
   scoped contexts, keyword aliases, and `@container`-typed terms.
 - A CLI with human-readable and JSON output and CI-friendly exit codes.
 - A `yml2vocab` golden-set fixture factory and an eval gate: every seeded
-  defect is caught (recall = 1.0), and real published contexts kept as
-  known-good anchors must stay finding-free (a false-positive guard).
+  defect is caught (recall = 1.0); real published contexts are pinned as
+  anchors — known-good ones must stay finding-free (a false-positive guard),
+  and regression anchors must reproduce their confirmed finding set exactly.
 - Validation against published W3C and Digital Bazaar contexts (DID,
   credentials-v2, data-integrity, ActivityStreams, ODRL, and others), kept as
   regression fixtures.
