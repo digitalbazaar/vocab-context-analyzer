@@ -40,5 +40,36 @@
     "description": "Published Digital Bazaar vital-records context; a known-good anchor that must stay finding-free.",
     "context": "real/vital-records-vocab.context.jsonld",
     "expectedRuleIds": []
+  },
+  {
+    "name": "regression-did",
+    "description": "Published W3C DID vocabulary and context. Its findings are confirmed real (2026-07-02): terms without rdfs:label/comment, properties without rdfs:domain, and vocab terms not mapped in the context. Pinned as an exact-match regression anchor so a rule newly over- or under-flagging this real artifact is caught.",
+    "vocab": "real/did.jsonld",
+    "context": "real/did.context.jsonld",
+    "expectedRuleIds": [
+      "pair/coverage",
+      "vocab/missing-domain-range",
+      "vocab/no-definition"
+    ],
+    "exact": true
+  },
+  {
+    "name": "regression-odrl",
+    "description": "Published ODRL context. The ctx/unprotected finding is confirmed real (the context is not @protected). Pinned as an exact-match regression anchor.",
+    "context": "real/odrl.context.jsonld",
+    "expectedRuleIds": [
+      "ctx/unprotected"
+    ],
+    "exact": true
+  },
+  {
+    "name": "regression-activitystreams",
+    "description": "Published ActivityStreams context. Both findings are confirmed real: @vocab is the blank-node prefix \"_:\" (ctx/unsafe-vocab) and the context is not @protected (ctx/unprotected). Pinned as an exact-match regression anchor.",
+    "context": "real/activitystreams.context.jsonld",
+    "expectedRuleIds": [
+      "ctx/unprotected",
+      "ctx/unsafe-vocab"
+    ],
+    "exact": true
   }
 ]

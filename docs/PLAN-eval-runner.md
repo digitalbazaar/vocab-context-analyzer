@@ -80,3 +80,26 @@ trade-offs, surfaced in review. None block the gate; each is a future PR.
    Resolved decision 3 above pins `scripts/` files to kebab-case
    (`build-fixtures.js`, `eval.js`); `loadAnchors.js` is camelCase. Rename to
    `scripts/load-anchors.js` (it merges away entirely under follow-up 1).
+
+## Regression-anchor triage (2026-07-02)
+
+The three real contexts that produce findings (deferred from PR #10) were
+triaged against their actual term nodes. **Verdict: every finding is real
+signal, not over-flagging** — no analyzer bug (unlike the `ctx/iri-collision`
+`@container` case). They are pinned as **exact-match regression anchors** (a new
+`exact: true` anchor kind) so a rule that later over- or under-flags one of
+these real artifacts fails the gate:
+
+- **did** (vocab + context): `vocab/no-definition` (`did:service`,
+  `did:serviceEndpoint` genuinely lack `rdfs:label`/`rdfs:comment`),
+  `vocab/missing-domain-range` (9 properties genuinely lack `rdfs:domain`),
+  `pair/coverage` (real vocab terms not mapped in the context). Its findings are
+  vocab-side, so this anchor loads the real vocabulary (the first anchor to do
+  so — anchors are otherwise context-only).
+- **odrl**: `ctx/unprotected` (the context is genuinely not `@protected`).
+- **activitystreams**: `ctx/unsafe-vocab` (`@vocab` is the blank-node `_:`) and
+  `ctx/unprotected`.
+
+If any of these findings should instead be *suppressed* (i.e. judged a rule
+being too aggressive on a legitimate pattern), that is a rule change + fixture
+re-triage, not an anchor edit.
