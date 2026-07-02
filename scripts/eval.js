@@ -4,8 +4,7 @@
 import {dirname, join} from 'node:path';
 import {evaluate} from '../lib/eval/runEval.js';
 import {fileURLToPath} from 'node:url';
-import {loadAnchorCases} from './loadAnchors.js';
-import {loadModel} from '../lib/shell/loadModel.js';
+import {loadCases} from '../lib/eval/loadCases.js';
 import {readFile} from 'node:fs/promises';
 import {runRules} from '../lib/runRules.js';
 
@@ -27,25 +26,24 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const FIXTURES = join(HERE, '..', 'test', 'fixtures');
 const GENERATED = join(FIXTURES, 'golden', 'generated');
 
-async function readJson(name) {
-  return JSON.parse(await readFile(join(GENERATED, name), 'utf8'));
-}
+// readers resolve an entry's document paths: golden cases reference bare
+// filenames in generated/, anchors reference paths relative to the fixtures
+// root (e.g. real/foo.context.jsonld).
+const readFromGenerated = name =>
+  readFile(join(GENERATED, name), 'utf8').then(JSON.parse);
+const readFromFixtures = name =>
+  readFile(join(FIXTURES, name), 'utf8').then(JSON.parse);
 
 async function main() {
-  const manifest = await readJson('manifest.json');
+  const golden = JSON.parse(
+    await readFile(join(GENERATED, 'manifest.json'), 'utf8'));
+  const anchors = JSON.parse(
+    await readFile(join(FIXTURES, 'golden', 'anchors.json'), 'utf8'));
 
-  const cases = [];
-  for(const entry of manifest) {
-    const model = await loadModel({
-      vocab: await readJson(entry.vocab),
-      context: await readJson(entry.context)
-    });
-    cases.push({
-      name: entry.name, model, expectedRuleIds: entry.expectedRuleIds ?? []
-    });
-  }
-  // known-good anchors: real published contexts that must stay finding-free
-  cases.push(...await loadAnchorCases(FIXTURES));
+  const cases = [
+    ...await loadCases({entries: golden, readJson: readFromGenerated}),
+    ...await loadCases({entries: anchors, readJson: readFromFixtures})
+  ];
 
   const findingsByCase = {};
   for(const c of cases) {

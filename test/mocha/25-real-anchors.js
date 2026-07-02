@@ -5,11 +5,14 @@ import {dirname, join} from 'node:path';
 import {evaluate} from '../../lib/eval/runEval.js';
 import {expect} from 'chai';
 import {fileURLToPath} from 'node:url';
-import {loadAnchorCases} from '../../scripts/loadAnchors.js';
+import {loadCases} from '../../lib/eval/loadCases.js';
+import {readFile} from 'node:fs/promises';
 import {runRules} from '../../lib/runRules.js';
 
 const FIXTURES = join(
   dirname(fileURLToPath(import.meta.url)), '..', 'fixtures');
+const readFromFixtures = name =>
+  readFile(join(FIXTURES, name), 'utf8').then(JSON.parse);
 
 // Anchors are real, published contexts kept as regression inputs (design doc
 // section 2.3), loaded from test/fixtures/golden/anchors.json. Known-good
@@ -19,7 +22,8 @@ const FIXTURES = join(
 describe('eval: real known-good anchors', () => {
   let cases;
   before(async () => {
-    cases = await loadAnchorCases(FIXTURES);
+    const anchors = await readFromFixtures('golden/anchors.json');
+    cases = await loadCases({entries: anchors, readJson: readFromFixtures});
   });
 
   it('loads every anchor with a model', () => {
