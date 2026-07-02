@@ -183,7 +183,7 @@ Deterministic rules currently implemented:
 | Rule id | Severity | Checks |
 | --- | --- | --- |
 | `ctx/iri-unresolved` | error | Every context term resolves to an absolute IRI. |
-| `ctx/iri-collision` | error | No two terms map to the same IRI. |
+| `ctx/iri-collision` | error | No two terms map to the same IRI, unless they differ by `@container` (a language-map or collection variant). |
 | `pair/coverage` | warning | Every vocabulary term appears in the context. |
 | `pair/orphan` | error | No context mapping references a missing vocab term. |
 | `vocab/no-definition` | warning | Every term has an `rdfs:label` or `rdfs:comment`. |
