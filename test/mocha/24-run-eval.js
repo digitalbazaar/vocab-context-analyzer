@@ -102,6 +102,40 @@ describe('eval: evaluate (eval-gate runner core)', () => {
     });
   });
 
+  describe('clean-labeled cases must be finding-free', () => {
+    // a case with no expected rules (the `good` baseline, the known-good real
+    // anchors) is a false-positive guard: any finding on it fails the gate,
+    // which recall alone cannot catch (a clean case adds nothing to recall).
+    it('fails the gate when a clean case produces any finding', () => {
+      const cases = [evalCase({name: 'anchor-x', expectedRuleIds: []})];
+      const findingsByCase = {'anchor-x': [{id: 'ctx/unprotected',
+        severity: 'warning', source: 'deterministic', artifact: 'context',
+        message: 'x'}]};
+      const report = evaluate({cases, findingsByCase});
+      expect(report.cleanliness.clean).to.equal(false);
+      expect(report.cleanliness.cleanViolations[0].case).to.equal('anchor-x');
+      expect(report.hardGatePassed).to.equal(false);
+    });
+
+    it('passes the gate when every clean case is finding-free', () => {
+      const cases = [evalCase({name: 'anchor-x', expectedRuleIds: []})];
+      const report = evaluate({cases, findingsByCase: {'anchor-x': []}});
+      expect(report.cleanliness.clean).to.equal(true);
+      expect(report.hardGatePassed).to.equal(true);
+    });
+
+    it('does not apply the clean rule to seeded-defect cases', () => {
+      // a defect case legitimately produces its expected finding; that is not
+      // a cleanliness violation
+      const cases = [evalCase()];
+      const findingsByCase = {'broken-orphan': [{id: 'pair/orphan',
+        severity: 'error', source: 'deterministic', artifact: 'context',
+        message: 'x'}]};
+      const report = evaluate({cases, findingsByCase});
+      expect(report.cleanliness.clean).to.equal(true);
+    });
+  });
+
   describe('the three checks are computed and reported', () => {
     it('reports citation, deferral, and faithfulness verdicts', () => {
       const cases = [evalCase({expectedRuleIds: []})];

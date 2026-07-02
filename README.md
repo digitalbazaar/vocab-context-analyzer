@@ -49,8 +49,9 @@ Implemented:
 - An offline-by-default JSON-LD loader and a model builder that handle nested
   scoped contexts, keyword aliases, and `@container`-typed terms.
 - A CLI with human-readable and JSON output and CI-friendly exit codes.
-- A `yml2vocab` golden-set fixture factory and a recall gate: every seeded
-  defect is caught (recall = 1.0).
+- A `yml2vocab` golden-set fixture factory and an eval gate: every seeded
+  defect is caught (recall = 1.0), and real published contexts kept as
+  known-good anchors must stay finding-free (a false-positive guard).
 - Validation against published W3C and Digital Bazaar contexts (DID,
   credentials-v2, data-integrity, ActivityStreams, ODRL, and others), kept as
   regression fixtures.
