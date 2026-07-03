@@ -1,0 +1,40 @@
+vocab:
+  id: ex
+  value: https://example.org/v#
+  context: https://example.org/v.context.jsonld
+
+ontology:
+  - property: dc:title
+    value: Good Multi-Class Example
+  - property: dc:description
+    value: >-
+      A clean vocabulary with several independent classes and cross-class
+      object properties, all defined and covered.
+
+class:
+  - id: Book
+    label: Book
+    comment: A written work.
+  - id: Author
+    label: Author
+    comment: A person who writes.
+  - id: Publisher
+    label: Publisher
+    comment: An organization that publishes books.
+
+property:
+  - id: writtenBy
+    label: written by
+    domain: Book
+    range: Author
+    comment: The Author who wrote the Book.
+  - id: publishedBy
+    label: published by
+    domain: Book
+    range: Publisher
+    comment: The Publisher of the Book.
+  - id: title
+    label: title
+    domain: Book
+    range: xsd:string
+    comment: The title of the Book.

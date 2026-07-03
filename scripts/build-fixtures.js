@@ -43,6 +43,37 @@ const CASES = [
     expectedRuleIds: []
   },
   {
+    name: 'good-hierarchy',
+    src: 'good-hierarchy.yml',
+    description: 'A clean vocabulary with a class hierarchy (Person and ' +
+      'Organization subClassOf Agent); no findings. Guards against the ' +
+      'hierarchy rules false-positiving on a valid subClassOf.',
+    expectedRuleIds: []
+  },
+  {
+    name: 'good-coercion',
+    src: 'good-coercion.yml',
+    description: 'A clean vocabulary whose object property has a node range ' +
+      'and the matching @id coercion; no findings. Guards ctx/missing-' +
+      'coercion against firing on a correctly coerced property.',
+    expectedRuleIds: []
+  },
+  {
+    name: 'good-datatypes',
+    src: 'good-datatypes.yml',
+    description: 'A clean vocabulary with string, date, integer, and boolean ' +
+      'ranges, each correctly coerced; no findings. Guards the coercion rule ' +
+      'across datatype variety.',
+    expectedRuleIds: []
+  },
+  {
+    name: 'good-multiclass',
+    src: 'good-multiclass.yml',
+    description: 'A clean vocabulary with several independent classes and ' +
+      'cross-class object properties, all defined and covered; no findings.',
+    expectedRuleIds: []
+  },
+  {
     name: 'broken-no-definition',
     src: 'good.yml',
     description: 'The "knows" term has neither an rdfs:label nor an ' +

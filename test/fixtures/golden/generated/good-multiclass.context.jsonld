@@ -1,0 +1,25 @@
+{
+  "@context": {
+    "@protected": true,
+    "Book": {
+      "@id": "https://example.org/v#Book",
+      "@context": {
+        "@protected": true,
+        "writtenBy": {
+          "@id": "https://example.org/v#writtenBy",
+          "@type": "@id"
+        },
+        "publishedBy": {
+          "@id": "https://example.org/v#publishedBy",
+          "@type": "@id"
+        },
+        "title": {
+          "@id": "https://example.org/v#title",
+          "@type": "http://www.w3.org/2001/XMLSchema#string"
+        }
+      }
+    },
+    "Author": "https://example.org/v#Author",
+    "Publisher": "https://example.org/v#Publisher"
+  }
+}

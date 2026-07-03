@@ -1,0 +1,183 @@
+{
+  "@context": {
+    "ex": "https://example.org/v#",
+    "dc": "http://purl.org/dc/terms/",
+    "owl": "http://www.w3.org/2002/07/owl#",
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "vs": "http://www.w3.org/2003/06/sw-vocab-status/ns#",
+    "schema": "http://schema.org/",
+    "jsonld": "http://www.w3.org/ns/json-ld#",
+    "dc:date": {
+      "@type": "xsd:date"
+    },
+    "rdfs:domain": {
+      "@type": "@id"
+    },
+    "rdfs:range": {
+      "@type": "@id"
+    },
+    "rdfs:seeAlso": {
+      "@type": "@id"
+    },
+    "rdfs:subClassOf": {
+      "@type": "@id"
+    },
+    "rdfs:subPropertyOf": {
+      "@type": "@id"
+    },
+    "rdfs:isDefinedBy": {
+      "@type": "@id"
+    },
+    "owl:oneOf": {
+      "@container": "@list",
+      "@type": "@vocab"
+    },
+    "owl:deprecated": {
+      "@type": "xsd:boolean"
+    },
+    "owl:inverseOf": {
+      "@type": "@vocab"
+    },
+    "owl:unionOf": {
+      "@container": "@list",
+      "@type": "@vocab"
+    },
+    "rdfs_classes": {
+      "@reverse": "rdfs:isDefinedBy",
+      "@type": "@id"
+    },
+    "rdfs_properties": {
+      "@reverse": "rdfs:isDefinedBy",
+      "@type": "@id"
+    },
+    "rdfs_individuals": {
+      "@reverse": "rdfs:isDefinedBy",
+      "@type": "@id"
+    },
+    "rdfs_datatypes": {
+      "@reverse": "rdfs:isDefinedBy",
+      "@type": "@id"
+    },
+    "mentioned": {
+      "@reverse": "schema:mentions",
+      "@type": "@id"
+    }
+  },
+  "@id": "https://example.org/v#",
+  "@type": "owl:Ontology",
+  "dc:title": {
+    "@value": "Good Datatypes Example",
+    "@language": "en"
+  },
+  "dc:description": {
+    "@value": "A clean vocabulary with properties across several datatype ranges, each correctly coerced; the coercion rule must stay quiet on all of them.",
+    "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+  },
+  "dc:date": "1970-01-01",
+  "rdfs_properties": [
+    {
+      "@id": "ex:title",
+      "@type": [
+        "rdf:Property",
+        "owl:DatatypeProperty"
+      ],
+      "rdfs:domain": "ex:Event",
+      "rdfs:range": "xsd:string",
+      "rdfs:label": "title",
+      "rdfs:comment": {
+        "@value": "<div>The title of an Event.</div>",
+        "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+      },
+      "vs:term_status": "stable",
+      "mentioned": [
+        {
+          "@id": "https://example.org/v.context.jsonld",
+          "@type": "jsonld:Context"
+        }
+      ]
+    },
+    {
+      "@id": "ex:startDate",
+      "@type": [
+        "rdf:Property",
+        "owl:DatatypeProperty"
+      ],
+      "rdfs:domain": "ex:Event",
+      "rdfs:range": "xsd:date",
+      "rdfs:label": "start date",
+      "rdfs:comment": {
+        "@value": "<div>The date the Event starts.</div>",
+        "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+      },
+      "vs:term_status": "stable",
+      "mentioned": [
+        {
+          "@id": "https://example.org/v.context.jsonld",
+          "@type": "jsonld:Context"
+        }
+      ]
+    },
+    {
+      "@id": "ex:attendeeCount",
+      "@type": [
+        "rdf:Property",
+        "owl:DatatypeProperty"
+      ],
+      "rdfs:domain": "ex:Event",
+      "rdfs:range": "xsd:integer",
+      "rdfs:label": "attendee count",
+      "rdfs:comment": {
+        "@value": "<div>How many attendees the Event has.</div>",
+        "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+      },
+      "vs:term_status": "stable",
+      "mentioned": [
+        {
+          "@id": "https://example.org/v.context.jsonld",
+          "@type": "jsonld:Context"
+        }
+      ]
+    },
+    {
+      "@id": "ex:isPublic",
+      "@type": [
+        "rdf:Property",
+        "owl:DatatypeProperty"
+      ],
+      "rdfs:domain": "ex:Event",
+      "rdfs:range": "xsd:boolean",
+      "rdfs:label": "is public",
+      "rdfs:comment": {
+        "@value": "<div>Whether the Event is public.</div>",
+        "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+      },
+      "vs:term_status": "stable",
+      "mentioned": [
+        {
+          "@id": "https://example.org/v.context.jsonld",
+          "@type": "jsonld:Context"
+        }
+      ]
+    }
+  ],
+  "rdfs_classes": [
+    {
+      "@id": "ex:Event",
+      "@type": "rdfs:Class",
+      "rdfs:label": "Event",
+      "rdfs:comment": {
+        "@value": "<div>Something that happens at a time.</div>",
+        "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+      },
+      "vs:term_status": "stable",
+      "mentioned": [
+        {
+          "@id": "https://example.org/v.context.jsonld",
+          "@type": "jsonld:Context"
+        }
+      ]
+    }
+  ]
+}

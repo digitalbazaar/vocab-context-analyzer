@@ -1,0 +1,15 @@
+{
+  "@context": {
+    "@protected": true,
+    "Person": {
+      "@id": "https://example.org/v#Person",
+      "@context": {
+        "@protected": true,
+        "knows": {
+          "@id": "https://example.org/v#knows",
+          "@type": "@id"
+        }
+      }
+    }
+  }
+}
