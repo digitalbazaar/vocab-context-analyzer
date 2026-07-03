@@ -7,6 +7,34 @@
     "expectedRuleIds": []
   },
   {
+    "name": "good-hierarchy",
+    "description": "A clean vocabulary with a class hierarchy (Person and Organization subClassOf Agent); no findings. Guards against the hierarchy rules false-positiving on a valid subClassOf.",
+    "vocab": "good-hierarchy.jsonld",
+    "context": "good-hierarchy.context.jsonld",
+    "expectedRuleIds": []
+  },
+  {
+    "name": "good-coercion",
+    "description": "A clean vocabulary whose object property has a node range and the matching @id coercion; no findings. Guards ctx/missing-coercion against firing on a correctly coerced property.",
+    "vocab": "good-coercion.jsonld",
+    "context": "good-coercion.context.jsonld",
+    "expectedRuleIds": []
+  },
+  {
+    "name": "good-datatypes",
+    "description": "A clean vocabulary with string, date, integer, and boolean ranges, each correctly coerced; no findings. Guards the coercion rule across datatype variety.",
+    "vocab": "good-datatypes.jsonld",
+    "context": "good-datatypes.context.jsonld",
+    "expectedRuleIds": []
+  },
+  {
+    "name": "good-multiclass",
+    "description": "A clean vocabulary with several independent classes and cross-class object properties, all defined and covered; no findings.",
+    "vocab": "good-multiclass.jsonld",
+    "context": "good-multiclass.context.jsonld",
+    "expectedRuleIds": []
+  },
+  {
     "name": "broken-no-definition",
     "description": "The \"knows\" term has neither an rdfs:label nor an rdfs:comment, so it is undefined. Expected: vocab/no-definition.",
     "vocab": "broken-no-definition.jsonld",

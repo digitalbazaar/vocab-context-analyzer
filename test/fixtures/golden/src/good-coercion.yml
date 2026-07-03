@@ -1,0 +1,25 @@
+vocab:
+  id: ex
+  value: https://example.org/v#
+  context: https://example.org/v.context.jsonld
+
+ontology:
+  - property: dc:title
+    value: Good Coercion Example
+  - property: dc:description
+    value: >-
+      A clean vocabulary whose object property has a node range, so its context
+      mapping carries the matching @id coercion; the ctx/missing-coercion rule
+      must stay quiet.
+
+class:
+  - id: Person
+    label: Person
+    comment: A human being.
+
+property:
+  - id: knows
+    label: knows
+    domain: Person
+    range: Person
+    comment: A Person this Person knows (an object property; coerced to @id).

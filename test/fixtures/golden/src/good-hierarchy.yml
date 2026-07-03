@@ -1,0 +1,30 @@
+vocab:
+  id: ex
+  value: https://example.org/v#
+  context: https://example.org/v.context.jsonld
+
+ontology:
+  - property: dc:title
+    value: Good Hierarchy Example
+  - property: dc:description
+    value: A clean vocabulary exercising a class hierarchy (subClassOf).
+
+class:
+  - id: Agent
+    label: Agent
+    comment: Something that can act.
+  - id: Person
+    label: Person
+    upper_value: Agent
+    comment: A human being; a kind of Agent.
+  - id: Organization
+    label: Organization
+    upper_value: Agent
+    comment: A structured group; a kind of Agent.
+
+property:
+  - id: name
+    label: name
+    domain: Agent
+    range: xsd:string
+    comment: The name of an Agent.

@@ -1,0 +1,27 @@
+{
+  "@context": {
+    "@protected": true,
+    "Event": {
+      "@id": "https://example.org/v#Event",
+      "@context": {
+        "@protected": true,
+        "title": {
+          "@id": "https://example.org/v#title",
+          "@type": "http://www.w3.org/2001/XMLSchema#string"
+        },
+        "startDate": {
+          "@id": "https://example.org/v#startDate",
+          "@type": "http://www.w3.org/2001/XMLSchema#date"
+        },
+        "attendeeCount": {
+          "@id": "https://example.org/v#attendeeCount",
+          "@type": "http://www.w3.org/2001/XMLSchema#integer"
+        },
+        "isPublic": {
+          "@id": "https://example.org/v#isPublic",
+          "@type": "http://www.w3.org/2001/XMLSchema#boolean"
+        }
+      }
+    }
+  }
+}

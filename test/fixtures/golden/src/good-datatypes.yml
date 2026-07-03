@@ -1,0 +1,39 @@
+vocab:
+  id: ex
+  value: https://example.org/v#
+  context: https://example.org/v.context.jsonld
+
+ontology:
+  - property: dc:title
+    value: Good Datatypes Example
+  - property: dc:description
+    value: >-
+      A clean vocabulary with properties across several datatype ranges, each
+      correctly coerced; the coercion rule must stay quiet on all of them.
+
+class:
+  - id: Event
+    label: Event
+    comment: Something that happens at a time.
+
+property:
+  - id: title
+    label: title
+    domain: Event
+    range: xsd:string
+    comment: The title of an Event.
+  - id: startDate
+    label: start date
+    domain: Event
+    range: xsd:date
+    comment: The date the Event starts.
+  - id: attendeeCount
+    label: attendee count
+    domain: Event
+    range: xsd:integer
+    comment: How many attendees the Event has.
+  - id: isPublic
+    label: is public
+    domain: Event
+    range: xsd:boolean
+    comment: Whether the Event is public.

@@ -1,0 +1,17 @@
+{
+  "@context": {
+    "@protected": true,
+    "Agent": {
+      "@id": "https://example.org/v#Agent",
+      "@context": {
+        "@protected": true,
+        "name": {
+          "@id": "https://example.org/v#name",
+          "@type": "http://www.w3.org/2001/XMLSchema#string"
+        }
+      }
+    },
+    "Person": "https://example.org/v#Person",
+    "Organization": "https://example.org/v#Organization"
+  }
+}

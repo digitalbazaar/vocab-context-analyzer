@@ -1,0 +1,158 @@
+{
+  "@context": {
+    "ex": "https://example.org/v#",
+    "dc": "http://purl.org/dc/terms/",
+    "owl": "http://www.w3.org/2002/07/owl#",
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "vs": "http://www.w3.org/2003/06/sw-vocab-status/ns#",
+    "schema": "http://schema.org/",
+    "jsonld": "http://www.w3.org/ns/json-ld#",
+    "dc:date": {
+      "@type": "xsd:date"
+    },
+    "rdfs:domain": {
+      "@type": "@id"
+    },
+    "rdfs:range": {
+      "@type": "@id"
+    },
+    "rdfs:seeAlso": {
+      "@type": "@id"
+    },
+    "rdfs:subClassOf": {
+      "@type": "@id"
+    },
+    "rdfs:subPropertyOf": {
+      "@type": "@id"
+    },
+    "rdfs:isDefinedBy": {
+      "@type": "@id"
+    },
+    "owl:oneOf": {
+      "@container": "@list",
+      "@type": "@vocab"
+    },
+    "owl:deprecated": {
+      "@type": "xsd:boolean"
+    },
+    "owl:inverseOf": {
+      "@type": "@vocab"
+    },
+    "owl:unionOf": {
+      "@container": "@list",
+      "@type": "@vocab"
+    },
+    "rdfs_classes": {
+      "@reverse": "rdfs:isDefinedBy",
+      "@type": "@id"
+    },
+    "rdfs_properties": {
+      "@reverse": "rdfs:isDefinedBy",
+      "@type": "@id"
+    },
+    "rdfs_individuals": {
+      "@reverse": "rdfs:isDefinedBy",
+      "@type": "@id"
+    },
+    "rdfs_datatypes": {
+      "@reverse": "rdfs:isDefinedBy",
+      "@type": "@id"
+    },
+    "mentioned": {
+      "@reverse": "schema:mentions",
+      "@type": "@id"
+    }
+  },
+  "@id": "https://example.org/v#",
+  "@type": "owl:Ontology",
+  "dc:title": {
+    "@value": "Good Hierarchy Example",
+    "@language": "en"
+  },
+  "dc:description": {
+    "@value": "A clean vocabulary exercising a class hierarchy (subClassOf).",
+    "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+  },
+  "dc:date": "1970-01-01",
+  "rdfs_properties": [
+    {
+      "@id": "ex:name",
+      "@type": [
+        "rdf:Property",
+        "owl:DatatypeProperty"
+      ],
+      "rdfs:domain": "ex:Agent",
+      "rdfs:range": "xsd:string",
+      "rdfs:label": "name",
+      "rdfs:comment": {
+        "@value": "<div>The name of an Agent.</div>",
+        "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+      },
+      "vs:term_status": "stable",
+      "mentioned": [
+        {
+          "@id": "https://example.org/v.context.jsonld",
+          "@type": "jsonld:Context"
+        }
+      ]
+    }
+  ],
+  "rdfs_classes": [
+    {
+      "@id": "ex:Agent",
+      "@type": "rdfs:Class",
+      "rdfs:label": "Agent",
+      "rdfs:comment": {
+        "@value": "<div>Something that can act.</div>",
+        "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+      },
+      "vs:term_status": "stable",
+      "mentioned": [
+        {
+          "@id": "https://example.org/v.context.jsonld",
+          "@type": "jsonld:Context"
+        }
+      ]
+    },
+    {
+      "@id": "ex:Person",
+      "@type": "rdfs:Class",
+      "rdfs:subClassOf": [
+        "ex:Agent"
+      ],
+      "rdfs:label": "Person",
+      "rdfs:comment": {
+        "@value": "<div>A human being; a kind of Agent.</div>",
+        "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+      },
+      "vs:term_status": "stable",
+      "mentioned": [
+        {
+          "@id": "https://example.org/v.context.jsonld",
+          "@type": "jsonld:Context"
+        }
+      ]
+    },
+    {
+      "@id": "ex:Organization",
+      "@type": "rdfs:Class",
+      "rdfs:subClassOf": [
+        "ex:Agent"
+      ],
+      "rdfs:label": "Organization",
+      "rdfs:comment": {
+        "@value": "<div>A structured group; a kind of Agent.</div>",
+        "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
+      },
+      "vs:term_status": "stable",
+      "mentioned": [
+        {
+          "@id": "https://example.org/v.context.jsonld",
+          "@type": "jsonld:Context"
+        }
+      ]
+    }
+  ]
+}
