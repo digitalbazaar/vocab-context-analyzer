@@ -11,26 +11,34 @@ layer they cannot reach** (naming, definitions, modeling, coverage judgment).
 
 ## What you get
 
-Run `npm run label:packets` to generate one packet per case under
-`test/fixtures/golden/packets/<name>.json` (git-ignored; regenerate any time).
-Each packet has:
+Run `npm run label:sheets` to generate the kit under
+`test/fixtures/golden/labeling/` (git-ignored; regenerate any time):
 
-- `terms` — every term rendered flat: `iri`, `kind`, `label`, `comment`,
-  `domain`, `range`, `subClassOf`, `deprecated`. A `null` means the field is
-  absent (e.g. `comment: null` → nothing to judge the definition on).
-- `deterministicFindings` — what the rules already flagged. **Do not re-report
-  these.** They frame what is already known-broken; you add the subjective layer.
-- `labels` — the stub you fill in: `overall`, `designRank`, `subjectiveIssues`.
+- **`reference.md`** — the material you read. Per case, every term rendered
+  flat (`iri`, `kind`, `label`, `comment`, `domain`, `range`) plus the
+  deterministic findings the rules **already** caught. `comment: (none)` means
+  there is nothing to judge the definition on. **Do not re-report the
+  already-caught findings** — you add the subjective layer on top.
+- **`cases.csv`** — open in a spreadsheet. One row per case, columns
+  `name,cohort,overall,designRank`. Fill `overall` and `designRank`; leave the
+  rest.
+- **`issues.csv`** — the other sheet, columns `case,term,category,note`. Add
+  one row per subjective issue you find; leave empty if a case has none.
+
+You edit the two CSVs in a spreadsheet and read `reference.md` alongside — you
+never touch the JSON test fixtures. When done, the filled CSVs are read back
+and validated by `parseLabelSheets` (`lib/eval/labelSheets.js`), which produces
+manifest-ready label blocks.
 
 ## What you fill in
 
-### `overall` — one of `good` | `bad` | `borderline`
+### `overall` (cases.csv) — one of `good` | `bad` | `borderline`
 
 Your holistic verdict on whether this vocabulary/context is well designed.
 `borderline` is a real answer for genuinely debatable cases — it is **not** a
 way to avoid deciding (see No-Deferral below).
 
-### `designRank` — an ordinal within the case's cohort
+### `designRank` (cases.csv) — an ordinal within the case's cohort
 
 A non-negative integer ranking this case against the others **in its cohort**
 (best design = highest, or pick one direction and be consistent). Ranking only
@@ -39,11 +47,12 @@ cohort (e.g. "these credential contexts"). Do not rank across unrelated vocabs;
 that produces a meaningless ordering. This drives a rank-correlation metric, so
 consistency within the cohort matters more than absolute numbers.
 
-### `subjectiveIssues[]` — term-level problems the rules cannot catch
+### subjective issues (issues.csv) — term-level problems the rules cannot catch
 
-Each issue: `{ "term": "<full IRI>", "category": "<one of below>", "note":
-"<actionable observation>" }`. Use the term IRIs exactly as they appear in the
-packet's `terms[].iri`.
+One row per issue: `case,term,category,note`. `case` is the case `name`, `term`
+is the full IRI exactly as it appears in `reference.md`, `category` is one of
+the four below, and `note` is an actionable observation (quote the note in the
+spreadsheet if it contains a comma).
 
 | `category` | What it covers | Example note |
 | --- | --- | --- |
@@ -72,11 +81,14 @@ packet's `terms[].iri`.
 
 ## Returning your work
 
-Fill the `labels` block in each packet (or a copy), and set provenance:
-`labeledBy` (your id) and `labeledAt` (ISO date). The filled label fields map
-1:1 to the manifest schema (`lib/eval/manifestSchema.js`), so they can be
-merged back into the case's manifest entry directly. The engineer integrating
-them will validate each against `validateManifestEntry` before committing.
+Return the two filled CSVs (`cases.csv`, `issues.csv`) and note who labeled and
+when (a `labeledBy` id and `labeledAt` date, e.g. in the hand-off message).
+`parseLabelSheets` reads the CSVs, validates every value against the label
+vocabulary, and produces per-case label blocks that map 1:1 to the manifest
+schema (`lib/eval/manifestSchema.js`); the integrating engineer merges those
+into each case's manifest entry. A bad value (an overall outside the three
+bands, a category outside the rubric, a negative rank) is rejected at parse
+time with a clear message, so you get fast feedback on a typo.
 
 ## What this feeds
 

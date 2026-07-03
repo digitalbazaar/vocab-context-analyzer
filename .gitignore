@@ -19,6 +19,6 @@ package-lock.json
 .zed
 .claude
 
-# generated labeling packets (a hand-off artifact; regenerate with
-# `npm run label:packets`)
-test/fixtures/golden/packets
+# generated labeling kit (a hand-off artifact; regenerate with
+# `npm run label:sheets`)
+test/fixtures/golden/labeling
