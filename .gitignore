@@ -18,3 +18,7 @@ package-lock.json
 .fastembed_cache
 .zed
 .claude
+
+# generated labeling packets (a hand-off artifact; regenerate with
+# `npm run label:packets`)
+test/fixtures/golden/packets
