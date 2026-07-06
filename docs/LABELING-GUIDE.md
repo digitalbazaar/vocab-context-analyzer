@@ -5,8 +5,7 @@
 
 The Phase 2 LLM layer will be measured against a human-labeled standard. This
 guide is how that standard is produced: for each golden-set case you assign an
-overall verdict, a rank within its cohort, and any term-level subjective
-issues. The deterministic rules already catch objective defects — **your job
+overall verdict and any term-level subjective issues. The deterministic rules already catch objective defects — **your job
 is the layer they cannot reach** (naming, definitions, modeling, coverage
 judgment).
 
@@ -36,15 +35,6 @@ of the picture and can make a case bad on their own. `borderline` is a real
 answer for genuinely debatable cases — it is **not** a way to avoid deciding
 (see No-Deferral below), and it needs at least one subjective issue explaining
 the tension. Click a selected verdict again to unset it.
-
-### designRank — an ordinal within the case's cohort
-
-Use the **rank** button on a cohort header and drag the cases into order:
-**rank 1 = best design**, dense ranks, no ties (the app derives the numbers
-from your drag-order). Ranking only makes sense within a comparable group —
-cohort assignments live in `test/fixtures/golden/cohorts.json`. This drives a
-rank-correlation metric, so consistency within the cohort matters more than
-absolute positions.
 
 ### subjective issues — term-level problems the rules cannot catch
 
@@ -92,7 +82,7 @@ rejected at validation time with a clear message naming the case.
 
 ## What this feeds
 
-Once labeled, the threshold metrics (LLM precision/recall, rank correlation ρ)
-can be calibrated against your labels (design-doc step 5), which in turn gate
-the Phase 2 LLM scoring layer (step 6). Until then, those metrics are
+Once labeled, the threshold metrics can be calibrated against your labels
+(design-doc step 5), which in turn gate the Phase 2 LLM scoring layer
+(step 6). Until then, those metrics are
 report-only; the deterministic hard gates already run.

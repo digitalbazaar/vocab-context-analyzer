@@ -39,9 +39,16 @@ unenterable rather than caught-at-parse.
   build step — DB plain-JS rule). State lives in memory; every mutation
   autosaves via `PUT /api/labels` (debounced), so nothing depends on
   `localStorage`.
-- **Rank convention (decision):** within a cohort, rank `1` = best design,
-  dense ranks, no ties. The UI derives ranks from drag-order; the labeler never
-  types a number. `LABELING-GUIDE.md` states the same convention.
+- **Ranking (decision, revised 2026-07-06):** the labeler does not rank.
+  Explicit drag-to-rank was built and then removed: ordering blinded case ids
+  forces judgments the labeler does not hold, the current cohorts are
+  placeholders, and ρ is a report-only threshold metric anyway. The ρ metric
+  is computed against the coarse ordering the `overall` verdicts induce
+  (good > borderline > bad, Spearman with ties). `designRank` stays in the
+  manifest schema (always `null` from the app) so a finer mechanism can fill
+  it later; if generator-grading needs real orderings, the plan of record is
+  pairwise comparisons (Bradley–Terry over "which is better designed?"), not
+  drag-to-rank.
 - **Cohorts (assumption, see Open Questions):** a committed
   `test/fixtures/golden/cohorts.json` maps case name → cohort id. Until the
   expert defines cohorts, defaults are `generated` (17 cases) and `anchors`

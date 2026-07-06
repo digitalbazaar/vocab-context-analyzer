@@ -67,7 +67,6 @@
   .dot.good { background: var(--good); border-color: var(--good); }
   .dot.bad { background: var(--bad); border-color: var(--bad); }
   .dot.borderline { background: var(--mid); border-color: var(--mid); }
-  .rank-chip { margin-left: auto; font-size: 0.68rem; color: var(--gray); }
 
   /* panes */
   #reference, #form-pane { flex: 1; overflow-y: auto; padding: 1rem 1.3rem; min-width: 0; }
@@ -177,31 +176,6 @@
     padding: 0.35rem 0.8rem; cursor: pointer; font-size: 0.8rem; color: var(--accent);
   }
 
-  /* rank dialog */
-  dialog {
-    border: 1px solid var(--border); border-radius: 12px; padding: 1.1rem 1.3rem;
-    width: min(30rem, 90vw); max-height: 80vh;
-  }
-  dialog::backdrop { background: rgba(0,0,0,0.25); }
-  dialog h3 { margin: 0 0 0.2rem; font-size: 1rem; }
-  dialog p { margin: 0.2rem 0 0.8rem; font-size: 0.78rem; color: var(--gray); }
-  #rank-list { list-style: none; margin: 0; padding: 0; }
-  #rank-list li {
-    display: flex; align-items: center; gap: 0.6rem;
-    border: 1px solid var(--border); border-radius: 8px;
-    padding: 0.45rem 0.7rem; margin: 0.3rem 0; background: var(--paper);
-    cursor: grab; font-family: var(--mono); font-size: 0.8rem;
-  }
-  #rank-list li.dragging { opacity: 0.4; }
-  #rank-list .pos {
-    font-weight: 700; color: var(--accent); width: 1.4rem; text-align: right;
-  }
-  .dialog-actions { display: flex; gap: 0.6rem; justify-content: flex-end; margin-top: 0.9rem; }
-  .dialog-actions button {
-    border-radius: 8px; padding: 0.4rem 0.9rem; font-size: 0.85rem; cursor: pointer;
-    border: 1px solid var(--border); background: var(--paper);
-  }
-  .dialog-actions .primary { background: var(--accent); color: white; border-color: var(--accent); }
   @media (max-width: 900px) {
     #layout { flex-direction: column; overflow-y: auto; }
     #nav { width: 100%; border-right: none; border-bottom: 1px solid var(--border); }
@@ -238,9 +212,9 @@
   <h4>The screen</h4>
   <ul>
     <li><b>Left sidebar</b> — the cases, grouped by cohort. The dot shows your
-    verdict; <code>#n</code> shows your rank. Case ids are deliberately
-    anonymized (<code>case-07</code>, …) so nothing about a case's origin can
-    influence you — judge only the content.</li>
+    verdict. Case ids are deliberately anonymized (<code>case-07</code>, …) so
+    nothing about a case's origin can influence you — judge only the
+    content.</li>
     <li><b>Middle</b> — the case itself: the raw JSON-LD documents
     (<code>@context</code> first, then the vocabulary), with a toggle to a
     flattened term summary.</li>
@@ -256,12 +230,6 @@
   genuinely debatable cases — it is not a way to avoid deciding. A borderline
   verdict needs at least one issue (below) explaining the tension. Click a
   selected verdict again to unset it.</p>
-
-  <h4>design rank</h4>
-  <p>Orders the cases <i>within a cohort</i> from best design (<b>1</b>) to
-  worst. Use the <b>rank</b> button on a cohort header in the sidebar and drag
-  the list into order. Only within-cohort order matters — it feeds a
-  rank-correlation metric.</p>
 
   <h4>subjective issues</h4>
   <p>Term-level problems, one row each: pick the term, a category, and write a
@@ -294,18 +262,6 @@
   commit that file on your branch, push, and notify the integrating engineer —
   they import your labels into the golden set with one command.</p>
 </aside>
-
-<dialog id="rank-dialog">
-  <h3 id="rank-title"></h3>
-  <p>Drag to order — <b>1 = best design</b>. Applying assigns dense ranks to
-  every case in the cohort.</p>
-  <ol id="rank-list"></ol>
-  <div class="dialog-actions">
-    <button id="rank-clear">Clear ranks</button>
-    <button id="rank-cancel">Cancel</button>
-    <button id="rank-apply" class="primary">Apply ranking</button>
-  </div>
-</dialog>
 
 <script>
 'use strict';
@@ -373,8 +329,7 @@
   // --- nav ---
   function labeled(name) {
     const l = labels[name];
-    return l.overall !== null || l.designRank !== null ||
-      l.subjectiveIssues.length > 0;
+    return l.overall !== null || l.subjectiveIssues.length > 0;
   }
   function renderProgress() {
     const done = kit.cases.filter(c => labels[c.name].overall !== null).length;
@@ -388,10 +343,6 @@
       const head = document.createElement('div');
       head.className = 'cohort-head';
       head.textContent = cohort + ' (' + names.length + ')';
-      const rankBtn = document.createElement('button');
-      rankBtn.textContent = 'rank';
-      rankBtn.onclick = () => openRankDialog(cohort);
-      head.append(rankBtn);
       nav.append(head);
       for(const name of names) {
         const b = document.createElement('button');
@@ -401,12 +352,6 @@
         const label = document.createElement('span');
         label.textContent = name;
         b.append(dot, label);
-        if(labels[name].designRank !== null) {
-          const chip = document.createElement('span');
-          chip.className = 'rank-chip';
-          chip.textContent = '#' + labels[name].designRank;
-          b.append(chip);
-        }
         b.onclick = () => { current = name; renderAll(); };
         nav.append(b);
       }
@@ -556,22 +501,6 @@
     }
     pane.append(fsO);
 
-    // rank (read-only here; set via cohort dialog)
-    const fsR = document.createElement('fieldset');
-    const legR = document.createElement('legend');
-    legR.textContent = 'design rank (within cohort "' + c.cohort + '")';
-    fsR.append(legR);
-    const rv = document.createElement('div');
-    rv.textContent = l.designRank === null
-      ? 'unranked — use the "rank" button on the cohort in the sidebar'
-      : '#' + l.designRank + ' of ' + cohorts[c.cohort].length + ' (1 = best)';
-    const hintR = document.createElement('div');
-    hintR.className = 'hint';
-    hintR.textContent = 'Orders this case against the others in its cohort, ' +
-      'best design first. Only the within-cohort order matters.';
-    fsR.append(rv, hintR);
-    pane.append(fsR);
-
     // subjective issues
     const fsI = document.createElement('fieldset');
     const legI = document.createElement('legend');
@@ -631,67 +560,6 @@
     fsI.append(add);
     pane.append(fsI);
   }
-
-  // --- rank dialog (drag to order; apply = dense ranks 1..n) ---
-  const dialog = document.getElementById('rank-dialog');
-  let rankCohort = null;
-  function openRankDialog(cohort) {
-    rankCohort = cohort;
-    document.getElementById('rank-title').textContent =
-      'Rank cohort "' + cohort + '"';
-    const list = document.getElementById('rank-list');
-    list.replaceChildren();
-    const names = [...cohorts[cohort]].sort((a, b) => {
-      const ra = labels[a].designRank ?? Infinity;
-      const rb = labels[b].designRank ?? Infinity;
-      return ra - rb || cohorts[cohort].indexOf(a) - cohorts[cohort].indexOf(b);
-    });
-    names.forEach(name => {
-      const li = document.createElement('li');
-      li.draggable = true;
-      li.dataset.name = name;
-      const pos = document.createElement('span');
-      pos.className = 'pos';
-      const label = document.createElement('span');
-      label.textContent = name;
-      li.append(pos, label);
-      li.addEventListener('dragstart', () => li.classList.add('dragging'));
-      li.addEventListener('dragend', () => li.classList.remove('dragging'));
-      list.append(li);
-    });
-    list.addEventListener('dragover', onDragOver);
-    renumber();
-    dialog.showModal();
-  }
-  function onDragOver(e) {
-    e.preventDefault();
-    const list = document.getElementById('rank-list');
-    const dragging = list.querySelector('.dragging');
-    if(!dragging) { return; }
-    const after = [...list.querySelectorAll('li:not(.dragging)')].find(li =>
-      e.clientY < li.getBoundingClientRect().top + li.offsetHeight / 2);
-    if(after) { list.insertBefore(dragging, after); }
-    else { list.append(dragging); }
-    renumber();
-  }
-  function renumber() {
-    [...document.querySelectorAll('#rank-list li')].forEach((li, i) => {
-      li.querySelector('.pos').textContent = String(i + 1);
-    });
-  }
-  document.getElementById('rank-apply').onclick = () => {
-    [...document.querySelectorAll('#rank-list li')].forEach((li, i) => {
-      labels[li.dataset.name].designRank = i + 1;
-    });
-    dialog.close(); markDirty(); renderAll();
-  };
-  document.getElementById('rank-clear').onclick = () => {
-    for(const name of cohorts[rankCohort]) {
-      labels[name].designRank = null;
-    }
-    dialog.close(); markDirty(); renderAll();
-  };
-  document.getElementById('rank-cancel').onclick = () => dialog.close();
 
   // help drawer: slides in from the right so the case stays visible while
   // reading; toggled on demand and opened automatically on a fresh session
