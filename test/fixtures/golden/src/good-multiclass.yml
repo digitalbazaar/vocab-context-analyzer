@@ -5,11 +5,11 @@ vocab:
 
 ontology:
   - property: dc:title
-    value: Good Multi-Class Example
+    value: Multi-Class Example Vocabulary
   - property: dc:description
     value: >-
-      A clean vocabulary with several independent classes and cross-class
-      object properties, all defined and covered.
+      A vocabulary with several independent classes and cross-class object
+      properties.
 
 class:
   - id: Book

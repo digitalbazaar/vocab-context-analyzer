@@ -68,11 +68,11 @@
   "@id": "https://example.org/v#",
   "@type": "owl:Ontology",
   "dc:title": {
-    "@value": "Good Coercion Example",
+    "@value": "Coercion Example Vocabulary",
     "@language": "en"
   },
   "dc:description": {
-    "@value": "A clean vocabulary whose object property has a node range, so its context mapping carries the matching @id coercion; the ctx/missing-coercion rule must stay quiet.",
+    "@value": "A vocabulary whose object property has a node range, mapped with @id coercion in its context.",
     "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
   },
   "dc:date": "1970-01-01",

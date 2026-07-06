@@ -68,11 +68,11 @@
   "@id": "https://example.org/v#",
   "@type": "owl:Ontology",
   "dc:title": {
-    "@value": "Good Datatypes Example",
+    "@value": "Datatypes Example Vocabulary",
     "@language": "en"
   },
   "dc:description": {
-    "@value": "A clean vocabulary with properties across several datatype ranges, each correctly coerced; the coercion rule must stay quiet on all of them.",
+    "@value": "A vocabulary with properties across several datatype ranges, each with a typed context mapping.",
     "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
   },
   "dc:date": "1970-01-01",

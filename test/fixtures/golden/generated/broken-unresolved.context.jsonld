@@ -13,7 +13,7 @@
           "@id": "https://example.org/v#knows",
           "@type": "@id"
         },
-        "broken": {
+        "related": {
           "@id": "notaprefix:butnoscheme that breaks"
         }
       }

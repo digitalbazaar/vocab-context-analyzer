@@ -128,9 +128,11 @@ const CASES = [
     src: 'good.yml',
     description: 'A context term maps to a value that is neither an absolute ' +
       'IRI nor a resolvable CURIE. Expected: ctx/iri-unresolved.',
-    // give a context term a relative IRI that cannot resolve
+    // give a context term a relative IRI that cannot resolve; the term name
+    // is neutral so the labeling app's blinded view leaks no verdict
     mutate({vocab, context}) {
-      _addContextTerm(context, 'broken', 'notaprefix:butnoscheme that breaks');
+      _addContextTerm(context, 'related',
+        'notaprefix:butnoscheme that breaks');
       return {vocab, context};
     },
     expectedRuleIds: ['ctx/iri-unresolved']

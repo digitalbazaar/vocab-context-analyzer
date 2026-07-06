@@ -7,7 +7,7 @@ ontology:
   - property: dc:title
     value: Golden Example Vocabulary
   - property: dc:description
-    value: A clean vocabulary used as the golden-set baseline.
+    value: An example vocabulary of people and organizations.
 
 class:
   - id: Person

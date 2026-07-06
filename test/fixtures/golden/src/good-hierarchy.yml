@@ -5,9 +5,9 @@ vocab:
 
 ontology:
   - property: dc:title
-    value: Good Hierarchy Example
+    value: Hierarchy Example Vocabulary
   - property: dc:description
-    value: A clean vocabulary exercising a class hierarchy (subClassOf).
+    value: A vocabulary exercising a class hierarchy (subClassOf).
 
 class:
   - id: Agent
