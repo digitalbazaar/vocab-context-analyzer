@@ -1,0 +1,720 @@
+<!doctype html>
+<!--
+  Copyright (c) 2026 Digital Bazaar, Inc. All rights reserved.
+
+  Golden-set labeling app (docs/specs/labeling-app.md). Served by
+  scripts/label-app.js; talks to GET /api/kit and PUT /api/labels on the same
+  origin. Static, no build step, no external assets.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Golden-Set Labeling</title>
+<style>
+  :root {
+    --ink: #1f2430; --paper: #ffffff; --bg: #f5f6f8;
+    --accent: #2563eb; --accent-soft: #eff6ff;
+    --good: #16a34a; --good-soft: #f0fdf4;
+    --bad: #dc2626; --bad-soft: #fef2f2;
+    --mid: #d97706; --mid-soft: #fffbeb;
+    --gray: #6b7280; --border: #d9dde3;
+    --mono: ui-monospace, Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: -apple-system, "Segoe UI", Helvetica, sans-serif;
+    font-size: 15px; color: var(--ink); background: var(--bg); height: 100vh;
+    display: flex; flex-direction: column;
+  }
+  header {
+    display: flex; align-items: center; gap: 1rem;
+    padding: 0.5rem 1rem; background: var(--paper);
+    border-bottom: 1px solid var(--border);
+  }
+  header h1 { font-size: 1rem; margin: 0; }
+  #progress { font-size: 0.8rem; color: var(--gray); }
+  #save-state { font-size: 0.75rem; margin-left: auto; }
+  header #help-btn { margin-left: 1rem; }
+  #save-state.saved { color: var(--good); }
+  #save-state.saving { color: var(--mid); }
+  #save-state.error { color: var(--bad); font-weight: 700; }
+  #layout { display: flex; flex: 1; min-height: 0; }
+
+  /* case list */
+  #nav {
+    width: 15rem; overflow-y: auto; background: var(--paper);
+    border-right: 1px solid var(--border); padding: 0.5rem 0;
+  }
+  .cohort-head {
+    font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.05em; color: var(--gray); padding: 0.7rem 1rem 0.2rem;
+    display: flex; justify-content: space-between; align-items: baseline;
+  }
+  .cohort-head button {
+    font-size: 0.68rem; border: 1px solid var(--border); background: none;
+    border-radius: 5px; cursor: pointer; padding: 0.1rem 0.4rem; color: var(--accent);
+  }
+  .case-item {
+    display: flex; align-items: center; gap: 0.4rem; width: 100%;
+    padding: 0.35rem 1rem; border: none; background: none; cursor: pointer;
+    font-size: 0.82rem; text-align: left; font-family: var(--mono);
+  }
+  .case-item:hover { background: var(--accent-soft); }
+  .case-item.active { background: var(--accent-soft); font-weight: 700; }
+  .dot { width: 0.55rem; height: 0.55rem; border-radius: 50%;
+    border: 1.5px solid var(--gray); flex: 0 0 auto; }
+  .dot.good { background: var(--good); border-color: var(--good); }
+  .dot.bad { background: var(--bad); border-color: var(--bad); }
+  .dot.borderline { background: var(--mid); border-color: var(--mid); }
+  .rank-chip { margin-left: auto; font-size: 0.68rem; color: var(--gray); }
+
+  /* panes */
+  #reference, #form-pane { flex: 1; overflow-y: auto; padding: 1rem 1.3rem; min-width: 0; }
+  #reference { background: var(--paper); border-right: 1px solid var(--border); }
+  #reference h2, #form-pane h2 { font-size: 1.05rem; margin: 0 0 0.8rem; font-family: var(--mono); }
+  .term {
+    border: 1px solid var(--border); border-radius: 8px;
+    padding: 0.55rem 0.8rem; margin: 0.5rem 0; font-size: 0.82rem;
+  }
+  .term .iri { font-family: var(--mono); font-size: 0.78rem; word-break: break-all; }
+  .term .kind {
+    font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.04em;
+    background: var(--accent-soft); color: var(--accent);
+    border-radius: 4px; padding: 0.05rem 0.35rem; margin-left: 0.4rem;
+  }
+  .term dl { margin: 0.35rem 0 0; display: grid; grid-template-columns: 5rem 1fr; gap: 0.1rem 0.5rem; }
+  .term dt { color: var(--gray); font-size: 0.72rem; }
+  .term dd { margin: 0; font-size: 0.78rem; }
+  .term dd.none { color: var(--gray); font-style: italic; }
+  .view-toggle { display: flex; gap: 0.3rem; margin: 0 0 0.8rem; }
+  .view-toggle button {
+    border: 1px solid var(--border); background: var(--paper);
+    border-radius: 6px; padding: 0.2rem 0.7rem; font-size: 0.75rem;
+    cursor: pointer; color: var(--gray);
+  }
+  .view-toggle button.active {
+    border-color: var(--accent); background: var(--accent-soft);
+    color: var(--accent); font-weight: 700;
+  }
+  .source-doc { margin: 0.8rem 0; }
+  .source-doc .doc-name {
+    font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.05em; color: var(--gray); margin-bottom: 0.25rem;
+  }
+  .source-doc pre {
+    background: #f8f9fb; border: 1px solid var(--border); border-radius: 8px;
+    padding: 0.7rem 0.9rem; margin: 0; font-family: var(--mono);
+    font-size: 0.72rem; line-height: 1.5; overflow-x: auto;
+    white-space: pre; max-height: 70vh; overflow-y: auto;
+  }
+  .findings {
+    background: var(--mid-soft); border: 1px solid #fde68a; border-radius: 8px;
+    padding: 0.6rem 0.9rem; margin: 0 0 1rem; font-size: 0.8rem;
+  }
+  .findings b { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; }
+  .findings ul { margin: 0.3rem 0 0; padding-left: 1.1rem; }
+  .findings code { font-family: var(--mono); font-size: 0.72rem; }
+
+  /* form */
+  fieldset { border: 1px solid var(--border); border-radius: 8px; margin: 0 0 1rem; padding: 0.7rem 0.9rem; }
+  legend { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--gray); padding: 0 0.3rem; }
+  .overall-opts { display: flex; gap: 0.5rem; }
+  .overall-opts label {
+    flex: 1; text-align: center; padding: 0.45rem 0; border: 1.5px solid var(--border);
+    border-radius: 8px; cursor: pointer; font-size: 0.85rem; user-select: none;
+  }
+  .overall-opts input { position: absolute; opacity: 0; }
+  .overall-opts label.sel-good { border-color: var(--good); background: var(--good-soft); font-weight: 700; }
+  .overall-opts label.sel-bad { border-color: var(--bad); background: var(--bad-soft); font-weight: 700; }
+  .overall-opts label.sel-borderline { border-color: var(--mid); background: var(--mid-soft); font-weight: 700; }
+  .warn { color: var(--mid); font-size: 0.78rem; margin-top: 0.4rem; }
+  .hint { color: var(--gray); font-size: 0.74rem; margin-top: 0.45rem; line-height: 1.45; }
+  #help-btn {
+    border: 1px solid var(--border); background: var(--paper); color: var(--accent);
+    border-radius: 6px; padding: 0.15rem 0.6rem; font-size: 0.78rem; cursor: pointer;
+  }
+  #help-drawer {
+    position: fixed; top: 0; right: 0; height: 100vh;
+    width: min(26rem, 92vw); background: var(--paper);
+    border-left: 1px solid var(--border);
+    box-shadow: -6px 0 18px rgba(0,0,0,0.12);
+    padding: 1rem 1.3rem 2rem; overflow-y: auto; z-index: 20;
+    transform: translateX(100%); transition: transform 0.22s ease;
+  }
+  #help-drawer.open { transform: translateX(0); }
+  #help-drawer .drawer-head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 0.4rem;
+  }
+  #help-drawer h3 { margin: 0; font-size: 1rem; }
+  #help-drawer h4 { margin: 1rem 0 0.2rem; font-size: 0.85rem; }
+  #help-drawer p, #help-drawer li { font-size: 0.8rem; line-height: 1.5; margin: 0.25rem 0; }
+  #help-drawer ul { margin: 0.2rem 0; padding-left: 1.2rem; }
+  #help-drawer .cat { font-family: var(--mono); font-size: 0.72rem; }
+  #help-close {
+    border: 1px solid var(--border); background: var(--paper);
+    border-radius: 6px; padding: 0.15rem 0.6rem; font-size: 0.85rem;
+    cursor: pointer; color: var(--gray);
+  }
+  .issue-row {
+    display: grid; grid-template-columns: minmax(8rem, 1.2fr) 7rem 2fr auto;
+    gap: 0.4rem; margin: 0.4rem 0; align-items: start;
+  }
+  .issue-row select, .issue-row textarea {
+    width: 100%; font-size: 0.78rem; font-family: inherit;
+    border: 1px solid var(--border); border-radius: 6px; padding: 0.3rem 0.4rem;
+  }
+  .issue-row select { font-family: var(--mono); }
+  .issue-row textarea { resize: vertical; min-height: 2.1rem; }
+  .issue-row textarea.empty { border-color: var(--mid); }
+  .issue-row .del {
+    border: none; background: none; color: var(--bad); cursor: pointer;
+    font-size: 1rem; padding: 0.2rem 0.4rem;
+  }
+  .add-issue {
+    border: 1px dashed var(--border); background: none; border-radius: 6px;
+    padding: 0.35rem 0.8rem; cursor: pointer; font-size: 0.8rem; color: var(--accent);
+  }
+
+  /* rank dialog */
+  dialog {
+    border: 1px solid var(--border); border-radius: 12px; padding: 1.1rem 1.3rem;
+    width: min(30rem, 90vw); max-height: 80vh;
+  }
+  dialog::backdrop { background: rgba(0,0,0,0.25); }
+  dialog h3 { margin: 0 0 0.2rem; font-size: 1rem; }
+  dialog p { margin: 0.2rem 0 0.8rem; font-size: 0.78rem; color: var(--gray); }
+  #rank-list { list-style: none; margin: 0; padding: 0; }
+  #rank-list li {
+    display: flex; align-items: center; gap: 0.6rem;
+    border: 1px solid var(--border); border-radius: 8px;
+    padding: 0.45rem 0.7rem; margin: 0.3rem 0; background: var(--paper);
+    cursor: grab; font-family: var(--mono); font-size: 0.8rem;
+  }
+  #rank-list li.dragging { opacity: 0.4; }
+  #rank-list .pos {
+    font-weight: 700; color: var(--accent); width: 1.4rem; text-align: right;
+  }
+  .dialog-actions { display: flex; gap: 0.6rem; justify-content: flex-end; margin-top: 0.9rem; }
+  .dialog-actions button {
+    border-radius: 8px; padding: 0.4rem 0.9rem; font-size: 0.85rem; cursor: pointer;
+    border: 1px solid var(--border); background: var(--paper);
+  }
+  .dialog-actions .primary { background: var(--accent); color: white; border-color: var(--accent); }
+  @media (max-width: 900px) {
+    #layout { flex-direction: column; overflow-y: auto; }
+    #nav { width: 100%; border-right: none; border-bottom: 1px solid var(--border); }
+    #reference { border-right: none; border-bottom: 1px solid var(--border); }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Golden-Set Labeling</h1>
+  <span id="progress"></span>
+  <span id="save-state"></span>
+  <button id="help-btn">how this works</button>
+</header>
+<div id="layout">
+  <nav id="nav"></nav>
+  <section id="reference"></section>
+  <section id="form-pane"></section>
+</div>
+
+<aside id="help-drawer" aria-label="How this works">
+  <div class="drawer-head">
+    <h3>What you're doing here</h3>
+    <button id="help-close" title="slide out of view">»</button>
+  </div>
+  <p>You are creating the <b>expert standard</b> that an LLM design-scoring
+  layer will be measured against. Each case is a JSON-LD vocabulary and its
+  <code>@context</code>. Automated rules have already caught the
+  <b>objective</b> defects (missing definitions, unmapped terms, broken
+  hierarchies — shown in the amber box, <b>do not re-report those</b>). Your
+  job is the layer the rules cannot reach: naming quality, definition quality,
+  modeling choices, and conceptual gaps.</p>
+
+  <h4>The screen</h4>
+  <ul>
+    <li><b>Left sidebar</b> — the cases, grouped by cohort. The dot shows your
+    verdict; <code>#n</code> shows your rank. Case ids are deliberately
+    anonymized (<code>case-07</code>, …) so nothing about a case's origin can
+    influence you — judge only the content.</li>
+    <li><b>Middle</b> — the case itself: the raw JSON-LD documents
+    (<code>@context</code> first, then the vocabulary), with a toggle to a
+    flattened term summary.</li>
+    <li><b>Right</b> — your labels for the selected case, with any
+    rule-caught findings shown above them (only when there are some).</li>
+  </ul>
+
+  <h4>overall verdict — good / bad / borderline</h4>
+  <p>Your holistic judgment of the design, <b>counting everything</b> — the
+  rule-caught defects in the amber box are part of the picture and can make a
+  case bad on their own. (The "don't re-report" rule below applies only to
+  issue rows, never to your verdict.) <b>borderline</b> is a real answer for
+  genuinely debatable cases — it is not a way to avoid deciding. A borderline
+  verdict needs at least one issue (below) explaining the tension. Click a
+  selected verdict again to unset it.</p>
+
+  <h4>design rank</h4>
+  <p>Orders the cases <i>within a cohort</i> from best design (<b>1</b>) to
+  worst. Use the <b>rank</b> button on a cohort header in the sidebar and drag
+  the list into order. Only within-cohort order matters — it feeds a
+  rank-correlation metric.</p>
+
+  <h4>subjective issues</h4>
+  <p>Term-level problems, one row each: pick the term, a category, and write a
+  note. The four categories:</p>
+  <ul>
+    <li><span class="cat">naming</span> — clarity/consistency of a term's
+    name. <i>"verb-phrase predicate, inconsistent with noun siblings"</i></li>
+    <li><span class="cat">definition</span> — a definition that <i>exists but
+    is poor</i> (circular, restates the label). Absent definitions are the
+    rules' job, not yours.</li>
+    <li><span class="cat">modeling</span> — wrong granularity or structure.
+    <i>"a document concern modeled as a Person attribute"</i></li>
+    <li><span class="cat">coverage</span> — a concept the vocabulary obviously
+    needs but gives no way to express.</li>
+  </ul>
+
+  <h4>Two non-negotiables</h4>
+  <ul>
+    <li><b>No deferrals.</b> "Needs expert input" is a failed label — you are
+    the expert input. Genuine uncertainty = borderline + an issue explaining
+    why.</li>
+    <li><b>Every note must be actionable.</b> "Bad name" is not enough;
+    "rename to a noun to match its siblings" is.</li>
+  </ul>
+
+  <h4>Saving and handing off</h4>
+  <p>Everything autosaves into your checkout at
+  <code>test/fixtures/golden/labels.json</code> (watch the top-right
+  indicator). Quit and relaunch anytime — your work resumes. When you're done:
+  commit that file on your branch, push, and notify the integrating engineer —
+  they import your labels into the golden set with one command.</p>
+</aside>
+
+<dialog id="rank-dialog">
+  <h3 id="rank-title"></h3>
+  <p>Drag to order — <b>1 = best design</b>. Applying assigns dense ranks to
+  every case in the cohort.</p>
+  <ol id="rank-list"></ol>
+  <div class="dialog-actions">
+    <button id="rank-clear">Clear ranks</button>
+    <button id="rank-cancel">Cancel</button>
+    <button id="rank-apply" class="primary">Apply ranking</button>
+  </div>
+</dialog>
+
+<script>
+'use strict';
+(async () => {
+  const CATEGORIES = ['naming', 'definition', 'modeling', 'coverage'];
+  const OVERALL = ['good', 'bad', 'borderline'];
+
+  const kit = await fetch('/api/kit').then(r => {
+    if(!r.ok) { throw new Error('kit fetch failed: ' + r.status); }
+    return r.json();
+  });
+
+  // state: labels map, exactly the labels.json shape
+  const labels = {};
+  for(const c of kit.cases) {
+    labels[c.name] = kit.labels[c.name] ??
+      {overall: null, designRank: null, subjectiveIssues: []};
+  }
+  const byName = Object.fromEntries(kit.cases.map(c => [c.name, c]));
+  const cohorts = {};
+  for(const c of kit.cases) {
+    (cohorts[c.cohort] ??= []).push(c.name);
+  }
+  let current = kit.cases[0].name;
+  // reference-pane view: experienced labelers read the raw JSON-LD;
+  // default to it when the case carries source documents
+  let refView = 'source';
+
+  // --- autosave (debounced PUT of the whole label state) ---
+  const saveEl = document.getElementById('save-state');
+  let saveTimer = null;
+  function markDirty() {
+    saveEl.textContent = 'saving…'; saveEl.className = 'saving';
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(save, 600);
+    renderNav(); renderProgress();
+  }
+  async function save() {
+    try {
+      // in-progress issues (empty note or no term yet) stay client-side; the
+      // serializer rightly rejects them, so persist only complete rows
+      const clean = {};
+      for(const [name, l] of Object.entries(labels)) {
+        clean[name] = {
+          ...l,
+          subjectiveIssues: l.subjectiveIssues.filter(
+            i => i.term !== '' && i.note.trim() !== '')
+        };
+      }
+      const res = await fetch('/api/labels', {
+        method: 'PUT',
+        headers: {'content-type': 'application/json'},
+        body: JSON.stringify({labels: clean})
+      });
+      if(!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error ?? ('HTTP ' + res.status));
+      }
+      saveEl.textContent = 'saved'; saveEl.className = 'saved';
+    } catch(e) {
+      saveEl.textContent = 'SAVE FAILED: ' + e.message; saveEl.className = 'error';
+    }
+  }
+
+  // --- nav ---
+  function labeled(name) {
+    const l = labels[name];
+    return l.overall !== null || l.designRank !== null ||
+      l.subjectiveIssues.length > 0;
+  }
+  function renderProgress() {
+    const done = kit.cases.filter(c => labels[c.name].overall !== null).length;
+    document.getElementById('progress').textContent =
+      done + '/' + kit.cases.length + ' verdicts';
+  }
+  function renderNav() {
+    const nav = document.getElementById('nav');
+    nav.replaceChildren();
+    for(const [cohort, names] of Object.entries(cohorts)) {
+      const head = document.createElement('div');
+      head.className = 'cohort-head';
+      head.textContent = cohort + ' (' + names.length + ')';
+      const rankBtn = document.createElement('button');
+      rankBtn.textContent = 'rank';
+      rankBtn.onclick = () => openRankDialog(cohort);
+      head.append(rankBtn);
+      nav.append(head);
+      for(const name of names) {
+        const b = document.createElement('button');
+        b.className = 'case-item' + (name === current ? ' active' : '');
+        const dot = document.createElement('span');
+        dot.className = 'dot' + (labels[name].overall ? ' ' + labels[name].overall : '');
+        const label = document.createElement('span');
+        label.textContent = name;
+        b.append(dot, label);
+        if(labels[name].designRank !== null) {
+          const chip = document.createElement('span');
+          chip.className = 'rank-chip';
+          chip.textContent = '#' + labels[name].designRank;
+          b.append(chip);
+        }
+        b.onclick = () => { current = name; renderAll(); };
+        nav.append(b);
+      }
+    }
+  }
+
+  // --- reference pane ---
+  function renderReference() {
+    const c = byName[current];
+    const pane = document.getElementById('reference');
+    pane.replaceChildren();
+    const h = document.createElement('h2');
+    h.textContent = c.name;
+    pane.append(h);
+
+    // view toggle: raw JSON-LD (the artifact under judgment) vs term cards
+    const hasSource = c.source !== undefined;
+    if(hasSource) {
+      const toggle = document.createElement('div');
+      toggle.className = 'view-toggle';
+      for(const [key, label] of
+        [['source', 'JSON-LD'], ['terms', 'term summary']]) {
+        const b = document.createElement('button');
+        b.textContent = label;
+        b.className = refView === key ? 'active' : '';
+        b.onclick = () => { refView = key; renderReference(); };
+        toggle.append(b);
+      }
+      pane.append(toggle);
+    }
+
+    if(hasSource && refView === 'source') {
+      for(const [key, title] of
+        [['context', '@context document'], ['vocab', 'vocabulary document']]) {
+        if(c.source[key] === undefined) {
+          continue;
+        }
+        const doc = document.createElement('div');
+        doc.className = 'source-doc';
+        const name = document.createElement('div');
+        name.className = 'doc-name';
+        name.textContent = title;
+        const pre = document.createElement('pre');
+        pre.textContent = JSON.stringify(c.source[key], null, 2);
+        doc.append(name, pre);
+        pane.append(doc);
+      }
+      return;
+    }
+
+    for(const t of c.terms) {
+      const div = document.createElement('div');
+      div.className = 'term';
+      const iri = document.createElement('span');
+      iri.className = 'iri'; iri.textContent = t.iri;
+      const kind = document.createElement('span');
+      kind.className = 'kind'; kind.textContent = t.kind;
+      div.append(iri, kind);
+      const dl = document.createElement('dl');
+      const row = (dt, dd, none) => {
+        const a = document.createElement('dt'); a.textContent = dt;
+        const b = document.createElement('dd'); b.textContent = dd;
+        if(none) { b.className = 'none'; }
+        dl.append(a, b);
+      };
+      if(t.label) { row('label', t.label); }
+      row('comment', t.comment ?? '(none)', !t.comment);
+      if(t.domain) { row('domain', t.domain.join(', ')); }
+      if(t.range) { row('range', t.range.join(', ')); }
+      div.append(dl);
+      pane.append(div);
+    }
+  }
+
+  // only rendered when the rules caught something; a case with no findings
+  // shows no box at all
+  function _renderFindings(c) {
+    const f = document.createElement('div');
+    f.className = 'findings';
+    const b = document.createElement('b');
+    b.textContent = 'Already caught by the rules — weigh these in your ' +
+      'verdict, but do not re-list them as issues';
+    f.append(b);
+    const ul = document.createElement('ul');
+    for(const fin of c.findings) {
+      const li = document.createElement('li');
+      const code = document.createElement('code');
+      code.textContent = fin.id;
+      li.append(code, ': ' + fin.message);
+      ul.append(li);
+    }
+    f.append(ul);
+    return f;
+  }
+
+  // --- form pane ---
+  function renderForm() {
+    const c = byName[current];
+    const l = labels[c.name];
+    const pane = document.getElementById('form-pane');
+    pane.replaceChildren();
+    const h = document.createElement('h2');
+    h.textContent = 'Labels — ' + c.name;
+    pane.append(h);
+
+    // rule findings sit with the labeling controls: they are context for the
+    // verdict, and appear only when there is something to weigh
+    if(c.findings.length > 0) {
+      pane.append(_renderFindings(c));
+    }
+
+    // overall
+    const fsO = document.createElement('fieldset');
+    const legO = document.createElement('legend');
+    legO.textContent = 'overall verdict';
+    fsO.append(legO);
+    const opts = document.createElement('div');
+    opts.className = 'overall-opts';
+    for(const v of OVERALL) {
+      const lab = document.createElement('label');
+      if(l.overall === v) { lab.className = 'sel-' + v; }
+      const input = document.createElement('input');
+      input.type = 'radio'; input.name = 'overall'; input.value = v;
+      input.checked = l.overall === v;
+      // toggle: clicking the selected verdict again unsets it
+      lab.onclick = e => {
+        e.preventDefault();
+        l.overall = l.overall === v ? null : v;
+        markDirty(); renderForm();
+      };
+      lab.append(input, v);
+      opts.append(lab);
+    }
+    const hintO = document.createElement('div');
+    hintO.className = 'hint';
+    hintO.textContent = 'Your holistic verdict on this vocabulary’s ' +
+      'design. borderline is a real answer for genuinely debatable cases — ' +
+      'not a way to avoid deciding. Click a selected verdict again to unset ' +
+      'it.';
+    fsO.append(opts, hintO);
+    if(l.overall === 'borderline' && l.subjectiveIssues.length === 0) {
+      const w = document.createElement('div');
+      w.className = 'warn';
+      w.textContent = '⚠ borderline needs at least one subjective issue ' +
+        'explaining the tension (attach it to the most relevant term).';
+      fsO.append(w);
+    }
+    pane.append(fsO);
+
+    // rank (read-only here; set via cohort dialog)
+    const fsR = document.createElement('fieldset');
+    const legR = document.createElement('legend');
+    legR.textContent = 'design rank (within cohort "' + c.cohort + '")';
+    fsR.append(legR);
+    const rv = document.createElement('div');
+    rv.textContent = l.designRank === null
+      ? 'unranked — use the "rank" button on the cohort in the sidebar'
+      : '#' + l.designRank + ' of ' + cohorts[c.cohort].length + ' (1 = best)';
+    const hintR = document.createElement('div');
+    hintR.className = 'hint';
+    hintR.textContent = 'Orders this case against the others in its cohort, ' +
+      'best design first. Only the within-cohort order matters.';
+    fsR.append(rv, hintR);
+    pane.append(fsR);
+
+    // subjective issues
+    const fsI = document.createElement('fieldset');
+    const legI = document.createElement('legend');
+    legI.textContent = 'subjective issues (' + l.subjectiveIssues.length + ')';
+    fsI.append(legI);
+    l.subjectiveIssues.forEach((issue, i) => {
+      const row = document.createElement('div');
+      row.className = 'issue-row';
+      const term = document.createElement('select');
+      for(const t of c.terms) {
+        const o = document.createElement('option');
+        o.value = t.iri; o.textContent = t.iri;
+        o.selected = issue.term === t.iri;
+        term.append(o);
+      }
+      term.onchange = () => { issue.term = term.value; markDirty(); };
+      const cat = document.createElement('select');
+      for(const v of CATEGORIES) {
+        const o = document.createElement('option');
+        o.value = v; o.textContent = v; o.selected = issue.category === v;
+        cat.append(o);
+      }
+      cat.onchange = () => { issue.category = cat.value; markDirty(); };
+      const note = document.createElement('textarea');
+      note.placeholder = 'actionable note — what is wrong and what would fix it';
+      note.value = issue.note;
+      note.className = issue.note.trim() === '' ? 'empty' : '';
+      note.oninput = () => {
+        issue.note = note.value;
+        note.className = issue.note.trim() === '' ? 'empty' : '';
+        markDirty();
+      };
+      const del = document.createElement('button');
+      del.className = 'del'; del.textContent = '✕'; del.title = 'remove issue';
+      del.onclick = () => {
+        l.subjectiveIssues.splice(i, 1); markDirty(); renderForm();
+      };
+      row.append(term, cat, note, del);
+      fsI.append(row);
+    });
+    const hintI = document.createElement('div');
+    hintI.className = 'hint';
+    hintI.textContent = 'Use this to report term-level problems the rules ' +
+      'cannot catch: naming, poor-but-present definitions, modeling ' +
+      'choices, conceptual gaps. Notes must be actionable — say what is ' +
+      'wrong and what would fix it. Do not re-report the findings in the ' +
+      'amber box.';
+    fsI.append(hintI);
+    const add = document.createElement('button');
+    add.className = 'add-issue';
+    add.textContent = '+ add issue';
+    add.onclick = () => {
+      l.subjectiveIssues.push(
+        {term: c.terms[0]?.iri ?? '', category: 'naming', note: ''});
+      markDirty(); renderForm();
+    };
+    fsI.append(add);
+    pane.append(fsI);
+  }
+
+  // --- rank dialog (drag to order; apply = dense ranks 1..n) ---
+  const dialog = document.getElementById('rank-dialog');
+  let rankCohort = null;
+  function openRankDialog(cohort) {
+    rankCohort = cohort;
+    document.getElementById('rank-title').textContent =
+      'Rank cohort "' + cohort + '"';
+    const list = document.getElementById('rank-list');
+    list.replaceChildren();
+    const names = [...cohorts[cohort]].sort((a, b) => {
+      const ra = labels[a].designRank ?? Infinity;
+      const rb = labels[b].designRank ?? Infinity;
+      return ra - rb || cohorts[cohort].indexOf(a) - cohorts[cohort].indexOf(b);
+    });
+    names.forEach(name => {
+      const li = document.createElement('li');
+      li.draggable = true;
+      li.dataset.name = name;
+      const pos = document.createElement('span');
+      pos.className = 'pos';
+      const label = document.createElement('span');
+      label.textContent = name;
+      li.append(pos, label);
+      li.addEventListener('dragstart', () => li.classList.add('dragging'));
+      li.addEventListener('dragend', () => li.classList.remove('dragging'));
+      list.append(li);
+    });
+    list.addEventListener('dragover', onDragOver);
+    renumber();
+    dialog.showModal();
+  }
+  function onDragOver(e) {
+    e.preventDefault();
+    const list = document.getElementById('rank-list');
+    const dragging = list.querySelector('.dragging');
+    if(!dragging) { return; }
+    const after = [...list.querySelectorAll('li:not(.dragging)')].find(li =>
+      e.clientY < li.getBoundingClientRect().top + li.offsetHeight / 2);
+    if(after) { list.insertBefore(dragging, after); }
+    else { list.append(dragging); }
+    renumber();
+  }
+  function renumber() {
+    [...document.querySelectorAll('#rank-list li')].forEach((li, i) => {
+      li.querySelector('.pos').textContent = String(i + 1);
+    });
+  }
+  document.getElementById('rank-apply').onclick = () => {
+    [...document.querySelectorAll('#rank-list li')].forEach((li, i) => {
+      labels[li.dataset.name].designRank = i + 1;
+    });
+    dialog.close(); markDirty(); renderAll();
+  };
+  document.getElementById('rank-clear').onclick = () => {
+    for(const name of cohorts[rankCohort]) {
+      labels[name].designRank = null;
+    }
+    dialog.close(); markDirty(); renderAll();
+  };
+  document.getElementById('rank-cancel').onclick = () => dialog.close();
+
+  // help drawer: slides in from the right so the case stays visible while
+  // reading; toggled on demand and opened automatically on a fresh session
+  const helpDrawer = document.getElementById('help-drawer');
+  document.getElementById('help-btn').onclick =
+    () => helpDrawer.classList.toggle('open');
+  document.getElementById('help-close').onclick =
+    () => helpDrawer.classList.remove('open');
+  document.addEventListener('keydown', e => {
+    if(e.key === 'Escape') {
+      helpDrawer.classList.remove('open');
+    }
+  });
+
+  function renderAll() { renderNav(); renderReference(); renderForm(); renderProgress(); }
+  renderAll();
+  saveEl.textContent = 'loaded'; saveEl.className = 'saved';
+  if(!kit.cases.some(c => labeled(c.name))) {
+    helpDrawer.classList.add('open');
+  }
+})().catch(e => {
+  document.body.textContent = 'Failed to start labeling app: ' + e.message;
+});
+</script>
+</body>
+</html>

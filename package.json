@@ -17,6 +17,8 @@
   "scripts": {
     "build:fixtures": "node scripts/build-fixtures.js",
     "eval": "node scripts/eval.js",
+    "label:app": "node scripts/label-app.js",
+    "label:import": "node scripts/import-labels.js",
     "lint": "eslint .",
     "test": "mocha test/mocha --recursive"
   },
