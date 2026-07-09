@@ -46,15 +46,6 @@
     width: 15rem; overflow-y: auto; background: var(--paper);
     border-right: 1px solid var(--border); padding: 0.5rem 0;
   }
-  .cohort-head {
-    font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
-    letter-spacing: 0.05em; color: var(--gray); padding: 0.7rem 1rem 0.2rem;
-    display: flex; justify-content: space-between; align-items: baseline;
-  }
-  .cohort-head button {
-    font-size: 0.68rem; border: 1px solid var(--border); background: none;
-    border-radius: 5px; cursor: pointer; padding: 0.1rem 0.4rem; color: var(--accent);
-  }
   .case-item {
     display: flex; align-items: center; gap: 0.4rem; width: 100%;
     padding: 0.35rem 1rem; border: none; background: none; cursor: pointer;
@@ -67,6 +58,10 @@
   .dot.good { background: var(--good); border-color: var(--good); }
   .dot.bad { background: var(--bad); border-color: var(--bad); }
   .dot.borderline { background: var(--mid); border-color: var(--mid); }
+  .seen-chip {
+    margin-left: auto; font-size: 0.62rem; color: var(--gray);
+    font-family: -apple-system, sans-serif; font-style: italic;
+  }
 
   /* panes */
   #reference, #form-pane { flex: 1; overflow-y: auto; padding: 1rem 1.3rem; min-width: 0; }
@@ -211,8 +206,10 @@
 
   <h4>The screen</h4>
   <ul>
-    <li><b>Left sidebar</b> — the cases, grouped by cohort. The dot shows your
-    verdict. Case ids are deliberately anonymized (<code>case-07</code>, …) so
+    <li><b>Left sidebar</b> — the cases. The colored dot shows your verdict; a
+    <i>viewed</i> marker means you opened a case but have not decided yet
+    (that marker lives in this browser only — verdicts and issues are what's
+    saved). Case ids are deliberately anonymized (<code>case-07</code>, …) so
     nothing about a case's origin can influence you — judge only the
     content.</li>
     <li><b>Middle</b> — the case itself: the raw JSON-LD documents
@@ -281,11 +278,20 @@
       {overall: null, designRank: null, subjectiveIssues: []};
   }
   const byName = Object.fromEntries(kit.cases.map(c => [c.name, c]));
-  const cohorts = {};
-  for(const c of kit.cases) {
-    (cohorts[c.cohort] ??= []).push(c.name);
-  }
   let current = kit.cases[0].name;
+
+  // which cases the labeler has opened — browser-local UX convenience only
+  // (the labels file is the durable state); pseudonyms are hash-stable, so
+  // they are safe to persist across sessions
+  const visited = new Set(
+    JSON.parse(localStorage.getItem('label-app.visited') ?? '[]'));
+  function markVisited(name) {
+    if(!visited.has(name)) {
+      visited.add(name);
+      localStorage.setItem('label-app.visited', JSON.stringify([...visited]));
+    }
+  }
+  markVisited(current);
   // reference-pane view: experienced labelers read the raw JSON-LD;
   // default to it when the case carries source documents
   let refView = 'source';
@@ -334,27 +340,32 @@
   function renderProgress() {
     const done = kit.cases.filter(c => labels[c.name].overall !== null).length;
     document.getElementById('progress').textContent =
-      done + '/' + kit.cases.length + ' verdicts';
+      done + '/' + kit.cases.length + ' verdicts · ' +
+      visited.size + ' viewed';
   }
   function renderNav() {
     const nav = document.getElementById('nav');
     nav.replaceChildren();
-    for(const [cohort, names] of Object.entries(cohorts)) {
-      const head = document.createElement('div');
-      head.className = 'cohort-head';
-      head.textContent = cohort + ' (' + names.length + ')';
-      nav.append(head);
-      for(const name of names) {
-        const b = document.createElement('button');
-        b.className = 'case-item' + (name === current ? ' active' : '');
-        const dot = document.createElement('span');
-        dot.className = 'dot' + (labels[name].overall ? ' ' + labels[name].overall : '');
-        const label = document.createElement('span');
-        label.textContent = name;
-        b.append(dot, label);
-        b.onclick = () => { current = name; renderAll(); };
-        nav.append(b);
+    for(const c of kit.cases) {
+      const name = c.name;
+      const b = document.createElement('button');
+      b.className = 'case-item' + (name === current ? ' active' : '');
+      const dot = document.createElement('span');
+      dot.className = 'dot' +
+        (labels[name].overall ? ' ' + labels[name].overall : '');
+      const label = document.createElement('span');
+      label.textContent = name;
+      b.append(dot, label);
+      // viewed-but-undecided marker: opened, no verdict yet — so the labeler
+      // can tell "still to read" from "read, needs a decision"
+      if(visited.has(name) && labels[name].overall === null) {
+        const seen = document.createElement('span');
+        seen.className = 'seen-chip';
+        seen.textContent = 'viewed';
+        b.append(seen);
       }
+      b.onclick = () => { current = name; markVisited(name); renderAll(); };
+      nav.append(b);
     }
   }
 

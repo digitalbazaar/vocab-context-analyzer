@@ -21,9 +21,9 @@ form on the right; a "how this works" drawer explains the screen. Everything
 autosaves to `test/fixtures/golden/labels.json` in your checkout; quit and
 relaunch anytime and your work resumes.
 
-**Cases are blinded on purpose.** You see anonymous ids (`case-07`,
-`cohort-2`), not fixture names, so nothing about a case's origin can influence
-your judgment. Judge only the content.
+**Cases are blinded on purpose.** You see anonymous ids (`case-07`), not
+fixture names, so nothing about a case's origin can influence your judgment.
+Judge only the content.
 
 ## What you label
 
