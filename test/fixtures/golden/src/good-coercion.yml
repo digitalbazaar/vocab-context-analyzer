@@ -5,12 +5,11 @@ vocab:
 
 ontology:
   - property: dc:title
-    value: Good Coercion Example
+    value: Coercion Example Vocabulary
   - property: dc:description
     value: >-
-      A clean vocabulary whose object property has a node range, so its context
-      mapping carries the matching @id coercion; the ctx/missing-coercion rule
-      must stay quiet.
+      A vocabulary whose object property has a node range, mapped with @id
+      coercion in its context.
 
 class:
   - id: Person

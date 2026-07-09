@@ -2,10 +2,12 @@
  * Copyright (c) 2026 Digital Bazaar, Inc. All rights reserved.
  */
 import {dirname, join} from 'node:path';
+import {
+  validateLabel, validateManifestEntry
+} from '../../lib/eval/manifestSchema.js';
 import {expect} from 'chai';
 import {fileURLToPath} from 'node:url';
 import {readFileSync} from 'node:fs';
-import {validateManifestEntry} from '../../lib/eval/manifestSchema.js';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const MANIFEST = join(
@@ -127,5 +129,53 @@ describe('eval: manifest schema', () => {
     for(const entry of manifest) {
       expect(() => validateManifestEntry(entry)).to.not.throw();
     }
+  });
+
+  // validateLabel guards the labeling app's save/import payloads — the shape
+  // labels.json uses, where null (not absence) marks an unset field
+  describe('validateLabel', () => {
+    const label = (overrides = {}) => ({
+      overall: null, designRank: null, subjectiveIssues: [], ...overrides
+    });
+
+    it('accepts an unset label (all nulls, empty issues)', () => {
+      expect(() => validateLabel(label(), 'good')).to.not.throw();
+    });
+
+    it('accepts a full valid label', () => {
+      expect(() => validateLabel(label({
+        overall: 'borderline', designRank: 3,
+        subjectiveIssues: [
+          {term: `${NS}knows`, category: 'naming', note: 'verb phrase'}
+        ]
+      }), 'good')).to.not.throw();
+    });
+
+    it('rejects an out-of-band overall, naming the case', () => {
+      expect(() => validateLabel(label({overall: 'excellent'}), 'did'))
+        .to.throw(/Label for "did".*overall/);
+    });
+
+    it('rejects a negative designRank', () => {
+      expect(() => validateLabel(label({designRank: -1}), 'good'))
+        .to.throw(/designRank/);
+    });
+
+    it('rejects a missing subjectiveIssues array', () => {
+      expect(() => validateLabel(
+        {overall: null, designRank: null}, 'good'))
+        .to.throw(/subjectiveIssues/);
+    });
+
+    it('rejects an issue with an off-rubric category', () => {
+      expect(() => validateLabel(label({
+        subjectiveIssues: [{term: `${NS}x`, category: 'bogus', note: 'n'}]
+      }), 'good')).to.throw(/category/);
+    });
+
+    it('rejects unexpected keys', () => {
+      expect(() => validateLabel(label({extra: true}), 'good'))
+        .to.throw(/unexpected key "extra"/);
+    });
   });
 });

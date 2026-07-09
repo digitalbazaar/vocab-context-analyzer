@@ -53,6 +53,11 @@ Implemented:
   defect is caught (recall = 1.0); real published contexts are pinned as
   anchors — known-good ones must stay finding-free (a false-positive guard),
   and regression anchors must reproduce their confirmed finding set exactly.
+- Expert-labeling tooling for the golden set (`docs/LABELING-GUIDE.md`): a
+  local, blinded labeling app (`npm run label:app` — browser UI showing the
+  raw JSON-LD under anonymous case ids, drag-to-rank, autosaves to a tracked
+  `labels.json`) and a validated importer that merges labels into the
+  manifests (`npm run label:import -- --labeled-by <handle>`).
 - Validation against published W3C and Digital Bazaar contexts (DID,
   credentials-v2, data-integrity, ActivityStreams, ODRL, and others), kept as
   regression fixtures.

@@ -5,11 +5,11 @@ vocab:
 
 ontology:
   - property: dc:title
-    value: Good Datatypes Example
+    value: Datatypes Example Vocabulary
   - property: dc:description
     value: >-
-      A clean vocabulary with properties across several datatype ranges, each
-      correctly coerced; the coercion rule must stay quiet on all of them.
+      A vocabulary with properties across several datatype ranges, each with
+      a typed context mapping.
 
 class:
   - id: Event

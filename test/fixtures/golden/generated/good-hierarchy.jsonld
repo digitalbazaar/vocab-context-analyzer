@@ -68,11 +68,11 @@
   "@id": "https://example.org/v#",
   "@type": "owl:Ontology",
   "dc:title": {
-    "@value": "Good Hierarchy Example",
+    "@value": "Hierarchy Example Vocabulary",
     "@language": "en"
   },
   "dc:description": {
-    "@value": "A clean vocabulary exercising a class hierarchy (subClassOf).",
+    "@value": "A vocabulary exercising a class hierarchy (subClassOf).",
     "@type": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML"
   },
   "dc:date": "1970-01-01",
